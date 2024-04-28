@@ -5,10 +5,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { BackgroundComponent } from "@/components/background/background";
-import { MainButtons } from "@/components/background/mainbuttons";
-import { LoginComponent } from "@/components/register/login";
+import { RegisterComponent } from "@/components/register/register";
 
-export default function Home({ isLoggedIn }: { isLoggedIn: boolean }) {
+export default function Home() {
   const router = useRouter();
   // useEffect(() => {
   //   if (!isLoggedIn) {
@@ -18,7 +17,7 @@ export default function Home({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   return (
     <BackgroundComponent>
-      <LoginComponent />
+      <RegisterComponent />
     </BackgroundComponent>
   );
 }
