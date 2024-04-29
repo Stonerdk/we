@@ -1,13 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 
-import btnCoexistence from "../../public/assets/main/btn_coexistence.png";
-import btnMentor from "../../public/assets/main/btn_mentor.png";
-import btnMetaverse from "../../public/assets/main/btn_metaverse.png";
-import btnRestoration from "../../public/assets/main/btn_restoration.png";
-import btnStudent from "../../public/assets/main/btn_student.png";
-import btnTown from "../../public/assets/main/btn_town.png";
-import btnAdmin from "../../public/assets/main/btn_admin.png";
+import btnCoexistence from "/public/assets/main/btn_coexistence.png";
+import btnMentor from "/public/assets/main/btn_mentor.png";
+import btnMetaverse from "/public/assets/main/btn_metaverse.png";
+import btnRestoration from "/public/assets/main/btn_restoration.png";
+import btnStudent from "/public/assets/main/btn_student.png";
+import btnTown from "/public/assets/main/btn_town.png";
+import btnAdmin from "/public/assets/main/btn_admin.png";
+import { Button } from "react-bootstrap";
+import { signOut } from "next-auth/react";
 
 export const MainButtons = () => (
   <>
@@ -33,5 +37,19 @@ export const MainButtons = () => (
     <Link href="/admin" style={{ width: "25%", left: "75%", top: "76%" }}>
       <Image src={btnAdmin} alt={"관리자"} />
     </Link>
+
+    <Button
+      variant="link"
+      onClick={() => signOut()}
+      style={{
+        position: "absolute",
+        width: "40%",
+        left: "30%",
+        top: "95%",
+        color: "white",
+      }}
+    >
+      로그아웃
+    </Button>
   </>
 );

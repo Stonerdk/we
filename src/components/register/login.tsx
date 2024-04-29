@@ -1,26 +1,27 @@
 import { useEffect, useState, useMemo, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { Form, Button } from "react-bootstrap";
+import { signIn } from "next-auth/react";
 
 export const LoginComponent = () => {
   const router = useRouter();
-  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userName, password }),
-    });
 
-    if (res.ok) {
+    const res = await signIn("credentials", {
+      email: email,
+      password: password,
+      redirect: false,
+    });
+    if (res?.ok) {
+      console.log("Login Success", res);
       router.push("/");
     } else {
-      alert("Failed to login");
+      console.log("Login Failed", res);
+      // TODO: toast
     }
   };
 
@@ -39,10 +40,10 @@ export const LoginComponent = () => {
         <Form.Group>
           <Form.Control
             type="text"
-            placeholder="이름을 입력하세요"
-            name="name"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            placeholder="이메일을 입력하세요"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             style={{
               marginBottom: "5px",
               borderColor: "black",
@@ -73,6 +74,7 @@ export const LoginComponent = () => {
             marginBottom: "10px",
             borderRadius: "10px",
           }}
+          onClick={handleLogin}
         >
           로그인
         </Button>

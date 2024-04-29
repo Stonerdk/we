@@ -6,9 +6,41 @@ import { RequiredAst } from "../common/symbol";
 import { wrapComponent } from "../../utils/wrap";
 
 const Phase1: PhaseComponent = ({ formData, handleChange, setPhase }) => {
-  const rules = ruleFactory<FormData>("name", "grade", "gender");
+  const rules = ruleFactory<FormData>("name", "birthday", "gender");
+  const verifyBirthday = (birthday: string) => {
+    if (birthday.length !== 6 || isNaN(Number(birthday))) {
+      return false;
+    }
+
+    const yearPrefix = parseInt(birthday.substring(0, 2)) > 21 ? "19" : "20";
+    const year = parseInt(yearPrefix + birthday.substring(0, 2));
+    const month = parseInt(birthday.substring(2, 4));
+    const day = parseInt(birthday.substring(4, 6));
+
+    if (year < 1960 || year > 2021) {
+      return false;
+    }
+
+    const birthdate = new Date(year, month - 1, day - 1);
+    if (
+      birthdate.getFullYear() !== year ||
+      birthdate.getMonth() !== month - 1 ||
+      birthdate.getDate() !== day - 1
+    ) {
+      return false;
+    }
+
+    // 입력된 날짜가 현재 날짜 이전인지 확인
+    const today = new Date();
+    if (birthdate >= today) {
+      return false;
+    }
+
+    return true;
+  };
   const verifyName = (name: string) => name.length >= 2 && name.length <= 12;
   addRule(rules, "name", verifyName, "이름은 2자 이상 12자 이하여야 합니다.");
+  addRule(rules, "birthday", verifyBirthday, "올바른 생년월일을 입력해 주세요.");
   const { validity, errorMessages } = useRules(rules, formData);
 
   const onSubmit = () => {
@@ -34,24 +66,16 @@ const Phase1: PhaseComponent = ({ formData, handleChange, setPhase }) => {
       <div className="column">
         <Form.Group style={{ width: "100%" }}>
           <Form.Label style={{ marginBottom: "3px", marginLeft: "5px" }}>
-            학년
+            생일<small> (ex. 091015)</small>
             <RequiredAst />
           </Form.Label>
-          <Form.Control as="select" name="grade" value={formData.grade} onChange={handleChange}>
-            <option value="">학년</option>
-            <option value="1">1학년</option>
-            <option value="2">2학년</option>
-            <option value="3">3학년</option>
-            <option value="4">4학년</option>
-            <option value="5">5학년</option>
-            <option value="6">6학년</option>
-            <option value="7">7학년</option>
-            <option value="8">8학년</option>
-            <option value="9">9학년</option>
-            <option value="10">10학년</option>
-            <option value="11">11학년</option>
-            <option value="12">12학년</option>
-          </Form.Control>
+          <Form.Control
+            type="text"
+            placeholder="ex. 091205"
+            name="birthday"
+            value={formData.birthday}
+            onChange={handleChange}
+          />
         </Form.Group>
         <Form.Group style={{ width: "100%" }}>
           <Form.Label style={{ marginBottom: "3px", marginLeft: "5px" }}>

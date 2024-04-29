@@ -1,22 +1,27 @@
 import { useState, SetStateAction } from "react";
 import { FiX } from "react-icons/fi";
-import { PhaseBar } from "./phasebar";
+import axios from "axios";
 import { useRouter } from "next/navigation";
+
+import { PhaseBar } from "./phasebar";
 import Phase1 from "./phase1";
 import Phase2 from "./phase2";
 import Phase3 from "./phase3";
 import Phase4 from "./phase4";
+import Phase5 from "./phase5";
+
 import "./register.css";
 
 export interface FormData {
   name: string;
-  grade: string;
+  birthday: string;
   gender: string;
   bio: string;
   email: string;
   password: string;
+  ktalkID: string;
+  desiredSubjects: string[];
 }
-const FormDataKeys: Array<keyof FormData> = ["name", "grade", "gender", "bio", "email", "password"];
 type EventHandler = (
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
 ) => void;
@@ -31,11 +36,13 @@ export type PhaseComponent = (
 
 const initialValues: FormData = {
   name: "",
-  grade: "",
+  birthday: "",
   gender: "",
   bio: "",
   email: "",
   password: "",
+  ktalkID: "",
+  desiredSubjects: [],
 };
 
 export const RegisterComponent = () => {
@@ -90,7 +97,14 @@ export const RegisterComponent = () => {
           setProfileImageUrl={setProfileImageUrl}
         />
       ) : phase == 3 ? (
-        <Phase4 formData={formData} handleChange={handleChange} router={router} />
+        <Phase4
+          formData={formData}
+          handleChange={handleChange}
+          setPhase={setPhase}
+          setFormData={setFormData}
+        />
+      ) : phase == 4 ? (
+        <Phase5 formData={formData} router={router} />
       ) : null}
     </div>
   );

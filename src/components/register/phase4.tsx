@@ -1,25 +1,77 @@
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import { ruleFactory, addRule, useRules } from "../../hooks/formRules";
-import type { FormData } from "./register";
+import type { PhaseComponent } from "./register";
 import { useState } from "react";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { Warning } from "../common/warning";
+import { wrapComponent } from "../../utils/wrap";
+import { RequiredAst } from "../common/symbol";
 
-const Phase4 = ({ formData, router }: { formData: FormData; router: AppRouterInstance }) => {
+const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData }) => {
+  const rules = ruleFactory("bio");
+  const { validity, errorMessages } = useRules(rules, formData);
+
+  const subjects = ["english", "math", "science", "computer"];
+  const subjectsKor = ["영어", "수학", "과학", "컴퓨터"];
+
+  const toggleSubject = (subject: string) => {
+    setFormData({
+      ...formData,
+      desiredSubjects: formData.desiredSubjects.includes(subject)
+        ? formData.desiredSubjects.filter((s) => s !== subject)
+        : [...formData.desiredSubjects, subject].sort((a, b) => subjects.indexOf(a) - subjects.indexOf(b)),
+    });
+  };
+
+  addRule(rules, "bio", (bio) => bio.length <= 100, "한 줄 소개는 100자 이하여야 합니다.");
+
   const onSubmit = () => {
-    router.push("/");
+    setPhase(4);
   };
 
   return (
-    <Form>
+    <Form onSubmit={onSubmit}>
       <Form.Group>
+        {wrapComponent(Warning)(formData.desiredSubjects.length === 0 ? ["희망 과목을 선택해주세요."] : [""])}
         <Form.Label style={{ marginBottom: "5px" }}>
-          {formData.email}로 인증 링크를 전송했습니다!
-          <br />
-          <small>인증 링크에 접속하시면 모든 가입이 완료됩니다.</small>
+          희망 과목
+          <RequiredAst />
         </Form.Label>
+        <ToggleButtonGroup type="checkbox" style={{ width: "100%", justifyContent: "center" }}>
+          {subjects.map((subject, i) => (
+            <ToggleButton
+              key={subject}
+              id={subject}
+              onClick={() => toggleSubject(subject)}
+              value={i}
+              variant="outline-success"
+              active={formData.desiredSubjects.includes(subject)}
+            >
+              {subjectsKor[i]}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+        <Form.Label style={{ marginTop: "5px", marginBottom: "5px" }}>
+          카카오톡 ID
+          <br />
+          <small>멘토와의 원활한 연락을 위해 작성해 주세요.</small>
+        </Form.Label>
+        <Form.Control
+          name="ktalkID"
+          value={formData.ktalkID}
+          onChange={handleChange}
+          style={{ marginBottom: "5px" }}
+        />
         <div className="button-wrapper">
-          <Button variant="success" className="register-nextbutton" onClick={onSubmit}>
-            완료
+          <Button variant="dark" className="register-nextbutton" onClick={() => setPhase(0)}>
+            이전
+          </Button>
+          <Button
+            variant="success"
+            className="register-nextbutton"
+            type="submit"
+            disabled={formData.desiredSubjects.length === 0}
+          >
+            다음
           </Button>
         </div>
       </Form.Group>
@@ -27,4 +79,4 @@ const Phase4 = ({ formData, router }: { formData: FormData; router: AppRouterIns
   );
 };
 
-export default Phase4;
+export default Phase3;

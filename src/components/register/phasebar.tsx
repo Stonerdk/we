@@ -10,7 +10,7 @@ const Step = ({ number, isCurrent, isCompleted }) => {
 };
 
 export const PhaseBar = ({ phase }: { phase: number }) => {
-  const steps = [1, 2, 3, 4];
+  const steps = [1, 2, 3, 4, 5];
   return (
     <div className="progress-container">
       {steps.map((number, index) => (
