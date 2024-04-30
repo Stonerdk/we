@@ -58,20 +58,14 @@ export const RegisterComponent = () => {
     });
   };
 
-  const handlePhase = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (phase == 0) {
-      setPhase(1);
-    } else if (phase == 1) {
-    } else if (phase == 2) {
-    } else if (phase == 3) {
-      try {
-        const response = await axios.post("/api/student", formData);
-        console.log(response.data);
-        return response.data;
-      } catch (error) {
-        throw new Error("Failed to submit form.");
-      }
+  const submitRegister = async () => {
+    try {
+      const response = await axios.post("/api/register", formData);
+      console.log(response.data);
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+      router.push("/");
     }
   };
 
@@ -104,7 +98,7 @@ export const RegisterComponent = () => {
           setFormData={setFormData}
         />
       ) : phase == 4 ? (
-        <Phase5 formData={formData} router={router} />
+        <Phase5 formData={formData} router={router} submitRegister={submitRegister} />
       ) : null}
     </div>
   );

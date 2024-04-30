@@ -1,7 +1,9 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { FirestoreAdapter } from "@next-auth/firebase-adapter";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import axios from "axios";
-import { signIn } from "../login/route";
+import { auth, firebaseConfig } from "@/firebase/firebasedb";
 
 const handler = NextAuth({
   providers: [
@@ -17,21 +19,20 @@ const handler = NextAuth({
       },
 
       async authorize(credentials, req) {
-        const res = await axios.post("http://localhost:3000/api/auth/login", {
-          email: credentials?.email,
-          password: credentials?.password,
-        });
-        const user = res.data;
-        console.log(user);
+        const { email, password } = credentials!;
 
-        if (user) {
-          return user;
-        } else {
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          return { email: user.email, id: user.uid };
+        } catch (error) {
           return null;
         }
       },
     }),
   ],
+  adapter: FirestoreAdapter(firebaseConfig),
+  session: { strategy: "jwt" },
   // callbacks: {
   //   async jwt({ token, user }) {
   //     return { ...token, ...user };
@@ -42,11 +43,11 @@ const handler = NextAuth({
   //     return session;
   //   },
   // },
-  secret: process.env.JWT_SECRET,
-  jwt: {
-    secret: process.env.JWT_SECRET,
-    maxAge: 30 * 24 * 60 * 60,
-  },
+  // secret: process.env.JWT_SECRET,
+  // jwt: {
+  //   secret: process.env.JWT_SECRET,
+  //   maxAge: 30 * 24 * 60 * 60,
+  // },
   pages: {
     signIn: "/login",
     error: "/login",

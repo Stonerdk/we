@@ -4,11 +4,15 @@ import type { FormData } from "./register";
 import { useState } from "react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-const Phase5 = ({ formData, router }: { formData: FormData; router: AppRouterInstance }) => {
-  const onSubmit = () => {
-    router.push("/");
-  };
-
+const Phase5 = ({
+  formData,
+  router,
+  submitRegister,
+}: {
+  formData: FormData;
+  router: AppRouterInstance;
+  submitRegister: () => Promise<void>;
+}) => {
   return (
     <Form>
       <Form.Group>
@@ -18,7 +22,7 @@ const Phase5 = ({ formData, router }: { formData: FormData; router: AppRouterIns
           <small>인증 링크에 접속하시면 모든 가입이 완료됩니다.</small>
         </Form.Label>
         <div className="button-wrapper">
-          <Button variant="success" className="register-nextbutton" onClick={onSubmit}>
+          <Button variant="success" className="register-nextbutton" onClick={(e) => submitRegister()}>
             완료
           </Button>
         </div>

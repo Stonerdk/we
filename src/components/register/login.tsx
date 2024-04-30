@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, SetStateAction } from "react";
+import { useEffect, useState, useMemo, SetStateAction, FormEventHandler } from "react";
 import { useRouter } from "next/navigation";
 import { Form, Button } from "react-bootstrap";
 import { signIn } from "next-auth/react";
@@ -8,7 +8,7 @@ export const LoginComponent = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (event) => {
+  const handleLogin: FormEventHandler = async (event) => {
     event.preventDefault();
 
     const res = await signIn("credentials", {

@@ -1,7 +1,13 @@
 import "./phasebar.css";
 import { Fragment } from "react";
 
-const Step = ({ number, isCurrent, isCompleted }) => {
+interface StepProps {
+  number: number;
+  isCurrent: boolean;
+  isCompleted: boolean;
+}
+
+const Step = ({ number, isCurrent, isCompleted }: StepProps) => {
   return (
     <div className="step-container">
       <div className={`circle ${isCurrent ? "current" : ""} ${isCompleted ? "completed" : ""}`}>{number}</div>

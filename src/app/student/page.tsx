@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout } from "../layout";
+import { CommonLayout } from "@/components/background/commonLayout";
 import axios from "axios";
 import { useState } from "react";
 import { Form, Button } from "react-bootstrap";
@@ -43,7 +43,7 @@ const Page = () => {
 
   return (
     <Protected>
-      <Layout title="참여학생">
+      <CommonLayout title="참여학생">
         <div>
           <Form onSubmit={postData}>
             <Form.Group>
@@ -92,7 +92,7 @@ const Page = () => {
             </Button>
           </Form>
         </div>
-      </Layout>
+      </CommonLayout>
     </Protected>
   );
 };

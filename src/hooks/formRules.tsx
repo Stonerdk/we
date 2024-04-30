@@ -14,7 +14,7 @@ export const addRule = <T extends Record<string, any>>(
   text: string
 ) => {
   if (!rules[key]) rules[key] = [];
-  rules[key].push({ condition, text });
+  rules[key]?.push({ condition, text });
   return rules;
 };
 
