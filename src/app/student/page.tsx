@@ -1,96 +1,69 @@
 "use client";
 
 import { CommonLayout } from "@/components/background/commonLayout";
-import axios from "axios";
-import { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { AssociatedMentorCard } from "@/components/student/AssociatedMentorCard";
+import { MyInfoCard } from "@/components/student/myInfoCard";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 import Protected from "../protected";
+import { useEffect, useState } from "react";
+import { getFirestore } from "firebase/firestore";
+import { auth, db } from "@/firebase/firebaseClient";
+import { useSession } from "next-auth/react";
+import { UserDoc, defaultUserDoc } from "@/types/userDoc";
 
 const Page = () => {
-  interface FormData {
-    name: string;
-    grade: string;
-    gender: string;
-    bio: string;
+  const { data: session, status } = useSession();
+  const [userDoc, setUserDoc] = useState<UserDoc>(defaultUserDoc);
+  const [loading, setLoading] = useState(true);
+
+  async function fetchUserData(uid: string) {
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      setUserDoc(docSnap.data() as UserDoc);
+      console.log(docSnap.data());
+    } else {
+      console.log("No such document!");
+    }
+    setLoading(false);
   }
 
-  const initialValues: FormData = {
-    name: "",
-    grade: "",
-    gender: "",
-    bio: "",
+  useEffect(() => {
+    fetchUserData(session!.user.uid);
+  }, [session]);
+
+  const onSubmit = async () => {
+    const docRef = doc(db, "users", session!.user.uid);
+    await setDoc(docRef, userDoc);
+    console.log("업데이트 성공");
   };
 
-  const [formData, setFormData] = useState<FormData>(initialValues);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const postData = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post("/api/student", formData);
-      console.log(response.data);
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to submit form.");
-    }
-  };
+  if (loading) {
+    return <>loading...</>;
+  }
 
   return (
     <Protected>
-      <CommonLayout title="참여학생">
-        <div>
-          <Form onSubmit={postData}>
-            <Form.Group>
-              <Form.Label>이름:</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="이름을 입력하세요"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>학년:</Form.Label>
-              <Form.Control as="select" name="grade" value={formData.grade} onChange={handleChange}>
-                <option value="">학년을 선택하세요</option>
-                <option value="1">1학년</option>
-                <option value="2">2학년</option>
-                <option value="3">3학년</option>
-              </Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>성별:</Form.Label>
-              <Form.Control as="select" name="gender" value={formData.gender} onChange={handleChange}>
-                <option value="">성별을 선택하세요</option>
-                <option value="male">남성</option>
-                <option value="female">여성</option>
-              </Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>한 줄 소개:</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="한 줄 소개를 입력하세요"
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              제출
-            </Button>
-          </Form>
+      <CommonLayout title="내 정보">
+        <div className="fcg10">
+          <MyInfoCard
+            username={userDoc.name}
+            birthday={userDoc.birthday.replace(/(\d{2})(\d{2})(\d{2})/, "$1. $2. $3)")}
+            gender={userDoc.gender}
+            bio={userDoc.bio}
+            email={userDoc.email}
+            ktalkID={userDoc.ktalkID}
+            desiredSubjects={userDoc.desiredSubjects}
+            setBio={(bio: string) => setUserDoc({ ...userDoc, bio })}
+            setKtalkID={(ktalkID: string) => setUserDoc({ ...userDoc, ktalkID })}
+            setDesiredSubjects={(desiredSubjects: string[]) => setUserDoc({ ...userDoc, desiredSubjects })}
+            onSubmit={onSubmit}
+            onReset={() => fetchUserData(session!.user.uid)}
+          />
+          <AssociatedMentorCard />
         </div>
       </CommonLayout>
     </Protected>

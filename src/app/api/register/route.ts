@@ -17,9 +17,10 @@ interface FormData {
 export async function POST(req: Request) {
   const formData: FormData = await req.json();
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+    const { password, ...formDataWithoutPassword } = formData;
+    const userCredential = await createUserWithEmailAndPassword(auth, formData.email, password);
     const user = userCredential.user;
-    await setDoc(doc(db, "users", user.uid), formData);
+    await setDoc(doc(db, "users", user.uid), formDataWithoutPassword);
     return NextResponse.json({ message: "register successfully" });
   } catch (error) {
     return NextResponse.json({ message: "register failed: ", error }, { status: 500 });

@@ -24,7 +24,7 @@ const handler = NextAuth({
         try {
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
-          return { email: user.email, id: user.uid };
+          return { ...user, id: user.uid };
         } catch (error) {
           return null;
         }
@@ -33,16 +33,23 @@ const handler = NextAuth({
   ],
   adapter: FirestoreAdapter(firebaseConfig),
   session: { strategy: "jwt" },
-  // callbacks: {
-  //   async jwt({ token, user }) {
-  //     return { ...token, ...user };
-  //   },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.uid = user.uid;
+      }
+      return token;
+    },
 
-  //   async session({ session, token }) {
-  //     session.user = token as any;
-  //     return session;
-  //   },
-  // },
+    async session({ session, token }) {
+      if (token.uid) {
+        const u = session.user;
+        session.user.uid = token.uid;
+      }
+      return session;
+    },
+  },
+
   // secret: process.env.JWT_SECRET,
   // jwt: {
   //   secret: process.env.JWT_SECRET,

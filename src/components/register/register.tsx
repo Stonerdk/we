@@ -9,19 +9,11 @@ import Phase2 from "./phase2";
 import Phase3 from "./phase3";
 import Phase4 from "./phase4";
 import Phase5 from "./phase5";
+import { defaultUserDoc, UserDoc } from "@/types/userDoc";
 
 import "./register.css";
 
-export interface FormData {
-  name: string;
-  birthday: string;
-  gender: string;
-  bio: string;
-  email: string;
-  password: string;
-  ktalkID: string;
-  desiredSubjects: string[];
-}
+export type FormData = UserDoc & { password: string };
 type EventHandler = (
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
 ) => void;
@@ -35,14 +27,8 @@ export type PhaseComponent = (
 ) => JSX.Element;
 
 const initialValues: FormData = {
-  name: "",
-  birthday: "",
-  gender: "",
-  bio: "",
-  email: "",
+  ...defaultUserDoc,
   password: "",
-  ktalkID: "",
-  desiredSubjects: [],
 };
 
 export const RegisterComponent = () => {
