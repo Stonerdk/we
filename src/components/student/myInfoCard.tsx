@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button } from "react-bootstrap";
 import { CardContainer } from "../common/cardContainer";
 import { PropsWithChildren } from "react";
+import { Warning } from "../common/warning";
 
 const RowPanel = ({ title, children }: PropsWithChildren<{ title: string }>) => (
   <Row className="pb-1 pt-1 align-items-center">
@@ -19,8 +20,12 @@ type MyInfoCardProps = {
   gender: string;
   bio: string;
   email: string;
+  grade: string;
+  isMentor: boolean;
   ktalkID: string;
   desiredSubjects: string[];
+  isEmailVerified?: boolean;
+  isAdminVerified?: boolean;
   setBio: (bio: string) => void;
   setKtalkID: (ktalkID: string) => void;
   setDesiredSubjects: (desiredSubjects: string[]) => void;
@@ -33,9 +38,13 @@ export const MyInfoCard = ({
   birthday,
   gender,
   bio,
+  grade,
   email,
+  isMentor,
   ktalkID,
   desiredSubjects,
+  isEmailVerified,
+  isAdminVerified,
   setBio,
   setKtalkID,
   setDesiredSubjects,
@@ -49,7 +58,9 @@ export const MyInfoCard = ({
     <CardContainer>
       <Row className="pb-1 pt-1">
         <Col>
-          <b style={{ fontSize: "18px" }}>내 프로필</b>
+          <div style={{ fontSize: "18px" }}>
+            <b>내 프로필</b> - {isMentor ? "멘토" : "멘티"}
+          </div>
         </Col>
       </Row>
       <Row className="pb-1 pt-1 justify-content-center align-items-center">
@@ -59,15 +70,10 @@ export const MyInfoCard = ({
           {/* </div> */}
         </Col>
         <Col>
-          <RowPanel title="이름">
-            <Form.Control size="sm" type="text" value={username} disabled />
-          </RowPanel>
-          <RowPanel title="생일">
-            <Form.Control size="sm" type="text" value={birthday} disabled />
-          </RowPanel>
-          <RowPanel title="성별">
-            <Form.Control size="sm" type="text" value={gender} disabled />
-          </RowPanel>
+          <RowPanel title="이름">{username}</RowPanel>
+          <RowPanel title="생일">{birthday}</RowPanel>
+          <RowPanel title="성별">{gender}</RowPanel>
+          <RowPanel title="학년">{grade}</RowPanel>
         </Col>
       </Row>
 
@@ -110,6 +116,13 @@ export const MyInfoCard = ({
             value={bio}
             onChange={(e) => setBio(e.target.value)}
           />
+        </Col>
+      </Row>
+
+      <Row className="pb-1 pt-1">
+        <Col xs={12}>
+          <Warning>{!isEmailVerified && "이메일 인증이 완료되지 않았습니다."}</Warning>
+          <Warning>{isMentor && !isAdminVerified && "관리자에 의해 멘토로 인증되지 않았습니다."}</Warning>
         </Col>
       </Row>
 

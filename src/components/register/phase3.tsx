@@ -17,7 +17,7 @@ const Phase3: PhaseComponent = ({
   addRule(rules, "bio", (bio) => bio.length <= 100, "한 줄 소개는 100자 이하여야 합니다.");
 
   const onSubmit = () => {
-    setPhase(3);
+    setPhase(4);
   };
 
   return (

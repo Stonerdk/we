@@ -32,13 +32,17 @@ const Page = () => {
   }
 
   useEffect(() => {
-    fetchUserData(session!.user.uid);
+    if (session) {
+      fetchUserData(session.user.uid);
+    }
   }, [session]);
 
   const onSubmit = async () => {
-    const docRef = doc(db, "users", session!.user.uid);
-    await setDoc(docRef, userDoc);
-    console.log("업데이트 성공");
+    if (session) {
+      const docRef = doc(db, "users", session!.user.uid);
+      await setDoc(docRef, userDoc);
+      console.log("업데이트 성공");
+    }
   };
 
   if (loading) {
@@ -50,12 +54,16 @@ const Page = () => {
       <CommonLayout title="내 정보">
         <div className="fcg10">
           <MyInfoCard
+            isMentor={userDoc.isMentor}
             username={userDoc.name}
-            birthday={userDoc.birthday.replace(/(\d{2})(\d{2})(\d{2})/, "$1. $2. $3)")}
-            gender={userDoc.gender}
+            birthday={userDoc.birthday.replace(/(\d{2})(\d{2})(\d{2})/, "$1. $2. $3")}
+            gender={userDoc.gender === "male" ? "남성" : userDoc.gender === "female" ? "여성" : "기타"}
             bio={userDoc.bio}
             email={userDoc.email}
+            grade={userDoc.grade ?? ""}
             ktalkID={userDoc.ktalkID}
+            isEmailVerified={userDoc.isEmailVerified}
+            isAdminVerified={userDoc.isAdminVerified}
             desiredSubjects={userDoc.desiredSubjects}
             setBio={(bio: string) => setUserDoc({ ...userDoc, bio })}
             setKtalkID={(ktalkID: string) => setUserDoc({ ...userDoc, ktalkID })}
@@ -63,7 +71,7 @@ const Page = () => {
             onSubmit={onSubmit}
             onReset={() => fetchUserData(session!.user.uid)}
           />
-          <AssociatedMentorCard />
+          <AssociatedMentorCard isMentor={userDoc.isMentor} />
         </div>
       </CommonLayout>
     </Protected>

@@ -25,7 +25,7 @@ const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData 
   addRule(rules, "bio", (bio) => bio.length <= 100, "한 줄 소개는 100자 이하여야 합니다.");
 
   const onSubmit = () => {
-    setPhase(4);
+    setPhase(5);
   };
 
   return (
@@ -50,11 +50,7 @@ const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData 
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-        <Form.Label style={{ marginTop: "5px", marginBottom: "5px" }}>
-          카카오톡 ID
-          <br />
-          <small>멘토와의 원활한 연락을 위해 작성해 주세요.</small>
-        </Form.Label>
+        <Form.Label style={{ marginTop: "5px", marginBottom: "5px" }}>카카오톡 ID</Form.Label>
         <Form.Control
           name="ktalkID"
           value={formData.ktalkID}

@@ -44,29 +44,61 @@ const Phase1: PhaseComponent = ({ formData, handleChange, setPhase }) => {
   const { validity, errorMessages } = useRules(rules, formData);
 
   const onSubmit = () => {
-    setPhase(1);
+    setPhase(2);
   };
 
   return (
     <Form onSubmit={onSubmit}>
       {wrapComponent(Warning)(errorMessages)}
-      <Form.Group>
-        <Form.Label style={{ marginBottom: "3px", marginLeft: "5px" }}>
-          이름
-          <RequiredAst />
-        </Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="2자 이상 12자 이하"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-      </Form.Group>
+      {formData.isMentor ? (
+        <div className="column">
+          <Form.Group style={{ width: "100%" }}>
+            <Form.Label style={{ marginBottom: "3px", marginLeft: "5px" }}>
+              이름
+              <RequiredAst />
+            </Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="2자 이상 12자 이하"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </Form.Group>
+          <Form.Group style={{ width: "100%" }}>
+            <Form.Label style={{ marginBottom: "3px", marginLeft: "5px" }}>
+              학년
+              <RequiredAst />
+            </Form.Label>
+            <Form.Control as="select" name="grade" value={formData.grade ?? ""} onChange={handleChange}>
+              <option value="">학년</option>
+              {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map((grade) => (
+                <option key={grade} value={grade}>
+                  {grade}학년
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+        </div>
+      ) : (
+        <Form.Group>
+          <Form.Label style={{ marginBottom: "3px", marginLeft: "5px" }}>
+            이름
+            <RequiredAst />
+          </Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="2자 이상 12자 이하"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+        </Form.Group>
+      )}
       <div className="column">
         <Form.Group style={{ width: "100%" }}>
           <Form.Label style={{ marginBottom: "3px", marginLeft: "5px" }}>
-            생일<small> (ex. 091015)</small>
+            생일
             <RequiredAst />
           </Form.Label>
           <Form.Control

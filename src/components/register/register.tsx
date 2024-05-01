@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 import { PhaseBar } from "./phasebar";
+import Phase0 from "./phase0";
 import Phase1 from "./phase1";
 import Phase2 from "./phase2";
 import Phase3 from "./phase3";
@@ -21,7 +22,6 @@ type EventHandler = (
 export type PhaseComponent = (
   props: {
     formData: FormData;
-    handleChange: EventHandler;
     setPhase: React.Dispatch<SetStateAction<number>>;
   } & Partial<Record<string, any>>
 ) => JSX.Element;
@@ -65,10 +65,12 @@ export const RegisterComponent = () => {
         <PhaseBar phase={phase + 1} />
       </div>
       {phase == 0 ? (
-        <Phase1 formData={formData} handleChange={handleChange} setPhase={setPhase} />
+        <Phase0 formData={formData} setFormData={setFormData} setPhase={setPhase} />
       ) : phase == 1 ? (
-        <Phase2 formData={formData} handleChange={handleChange} setPhase={setPhase} />
+        <Phase1 formData={formData} handleChange={handleChange} setPhase={setPhase} />
       ) : phase == 2 ? (
+        <Phase2 formData={formData} handleChange={handleChange} setPhase={setPhase} />
+      ) : phase == 3 ? (
         <Phase3
           formData={formData}
           handleChange={handleChange}
@@ -76,14 +78,14 @@ export const RegisterComponent = () => {
           profileImageUrl={profileImageUrl}
           setProfileImageUrl={setProfileImageUrl}
         />
-      ) : phase == 3 ? (
+      ) : phase == 4 ? (
         <Phase4
           formData={formData}
           handleChange={handleChange}
           setPhase={setPhase}
           setFormData={setFormData}
         />
-      ) : phase == 4 ? (
+      ) : phase == 5 ? (
         <Phase5 formData={formData} router={router} submitRegister={submitRegister} />
       ) : null}
     </div>

@@ -9,15 +9,22 @@ import { RequiredAst } from "../common/symbol";
 const Phase2: PhaseComponent = ({ formData, handleChange, setPhase }) => {
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const rules = ruleFactory<FormData>("email", "password");
-  const emailRE = /^(?![_.-])(?!.*[_.-]{2})[a-zA-Z0-9._-]+(?<![_.-])@[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+$/;
+  const emailRE = formData.isMentor
+    ? /s[0-9]+@sjajeju.kr/
+    : /^(?![_.-])(?!.*[_.-]{2})[a-zA-Z0-9._-]+(?<![_.-])@[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+$/;
 
-  addRule(rules, "email", (email) => emailRE.test(email), "올바른 이메일 주소를 입력하세요.");
+  addRule(
+    rules,
+    "email",
+    (email) => emailRE.test(email),
+    formData.isMentor ? "멘토는 sjajeju 이메일을 사용해야 합니다." : "올바른 이메일 주소를 입력하세요."
+  );
   addRule(rules, "password", (password) => password == passwordConfirm, "비밀번호가 일치하지 않습니다.");
   addRule(rules, "password", (password) => password.length >= 6, "비밀번호가 너무 짧습니다.");
   const { validity, errorMessages } = useRules(rules, formData);
 
   const onSubmit = () => {
-    setPhase(2);
+    setPhase(3);
   };
 
   return (

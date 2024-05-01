@@ -6,6 +6,10 @@ export interface UserDoc {
   email: string;
   ktalkID: string;
   desiredSubjects: string[];
+  isMentor: boolean;
+  grade?: string;
+  isEmailVerified: boolean;
+  isAdminVerified?: boolean;
 }
 
 export const defaultUserDoc: UserDoc = {
@@ -16,4 +20,8 @@ export const defaultUserDoc: UserDoc = {
   email: "",
   ktalkID: "",
   desiredSubjects: [],
+  isMentor: false,
+  grade: "",
+  isEmailVerified: false,
+  isAdminVerified: false,
 };

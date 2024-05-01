@@ -2,8 +2,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 30px;
-    margin-right: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
     margin-bottom: 20px;
   }
 
@@ -20,8 +20,8 @@
   }
 
   .circle {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     border: 2px solid #aaa;
     background: #aaa;
@@ -48,7 +48,7 @@
   .line {
     height: 4px;
     flex-grow: 1;
-    background: #ccc;
+    background: #aaa;
   }
 
   .line.active {
