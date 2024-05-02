@@ -3,39 +3,17 @@
 import { CommonLayout } from "@/components/background/commonLayout";
 import { AssociatedMentorCard } from "@/components/student/AssociatedMentorCard";
 import { MyInfoCard } from "@/components/student/myInfoCard";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-import Protected from "../protected";
-import { useEffect, useState } from "react";
-import { getFirestore } from "firebase/firestore";
-import { auth, db } from "@/firebase/firebaseClient";
+import { db } from "@/firebase/firebaseClient";
+import { useUser } from "@/hooks/useUser";
+import { doc, setDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
-import { UserDoc, defaultUserDoc } from "@/types/userDoc";
+import { useState } from "react";
+import Protected from "../protected";
 
 const Page = () => {
   const { data: session, status } = useSession();
-  const [userDoc, setUserDoc] = useState<UserDoc>(defaultUserDoc);
   const [loading, setLoading] = useState(true);
-
-  async function fetchUserData(uid: string) {
-    const docRef = doc(db, "users", uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      setUserDoc(docSnap.data() as UserDoc);
-      console.log(docSnap.data());
-    } else {
-      console.log("No such document!");
-    }
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    if (session) {
-      fetchUserData(session.user.uid);
-    }
-  }, [session]);
+  const { userDoc, setUserDoc, fetchUserData } = useUser(session, setLoading);
 
   const onSubmit = async () => {
     if (session) {
@@ -45,13 +23,9 @@ const Page = () => {
     }
   };
 
-  if (loading) {
-    return <>loading...</>;
-  }
-
   return (
     <Protected>
-      <CommonLayout title="내 정보">
+      <CommonLayout title="내 정보" loading={loading}>
         <div className="fcg10">
           <MyInfoCard
             isMentor={userDoc.isMentor}

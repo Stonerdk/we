@@ -1,8 +1,13 @@
 import Link from "next/link";
 import "./common.css";
 import { FiChevronLeft } from "react-icons/fi";
+import LoadingComponent from "../common/loading";
 
-export const CommonLayout = ({ children, title }: Readonly<{ title: string; children: React.ReactNode }>) => (
+export const CommonLayout = ({
+  children,
+  title,
+  loading,
+}: Readonly<{ title: string; children: React.ReactNode; loading?: boolean }>) => (
   <div className="container">
     <div className="header">
       <div className="flex text-align-left">
@@ -13,6 +18,6 @@ export const CommonLayout = ({ children, title }: Readonly<{ title: string; chil
       <div className="flex text-align-center">{title}</div>
       <div className="flex"></div>
     </div>
-    <div className="content">{children}</div>
+    <div className="content">{loading ? <LoadingComponent /> : children}</div>
   </div>
 );

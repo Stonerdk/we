@@ -10,6 +10,7 @@ export interface UserDoc {
   grade?: string;
   isEmailVerified: boolean;
   isAdminVerified?: boolean;
+  isAdmin?: boolean;
 }
 
 export const defaultUserDoc: UserDoc = {
@@ -24,4 +25,5 @@ export const defaultUserDoc: UserDoc = {
   grade: "",
   isEmailVerified: false,
   isAdminVerified: false,
+  isAdmin: false,
 };

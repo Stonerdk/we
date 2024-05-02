@@ -1,21 +1,12 @@
 import { auth, db } from "@/firebase/firebasedb";
+import { UserDoc, defaultUserDoc } from "@/types/userDoc";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
-interface FormData {
-  name: string;
-  birthday: string;
-  gender: string;
-  bio: string;
-  email: string;
-  password: string;
-  ktalkID: string;
-  desiredSubjects: string[];
-}
-
 export async function POST(req: Request) {
-  const formData: FormData = await req.json();
+  const reqFormData: Partial<UserDoc> & { password: string } = await req.json();
+  const formData = { ...defaultUserDoc, ...reqFormData };
   try {
     const { password, ...formDataWithoutPassword } = formData;
     const userCredential = await createUserWithEmailAndPassword(auth, formData.email, password);

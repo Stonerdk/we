@@ -28,10 +28,6 @@ const Protected = ({ children }: PropsWithChildren): JSX.Element => {
   return authorized ? <div>{children}</div> : <></>;
 };
 
-// export function AuthSession({ children }: PropsWithChildren): JSX.Element {
-//   return <SessionProvider>{children}</SessionProvider>;
-// }
-
 export function AuthSession({ children }: PropsWithChildren) {
   return <SessionProvider>{children}</SessionProvider>;
 }
