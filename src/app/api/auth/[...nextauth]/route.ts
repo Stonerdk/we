@@ -50,11 +50,11 @@ const handler = NextAuth({
     },
   },
 
-  // secret: process.env.JWT_SECRET,
-  // jwt: {
-  //   secret: process.env.JWT_SECRET,
-  //   maxAge: 30 * 24 * 60 * 60,
-  // },
+  secret: process.env.JWT_SECRET,
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    maxAge: 30 * 24 * 60 * 60,
+  },
   pages: {
     signIn: "/login",
     error: "/login",

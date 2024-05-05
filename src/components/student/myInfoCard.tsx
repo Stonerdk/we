@@ -1,9 +1,10 @@
 import type { FormData } from "../register/register";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button } from "react-bootstrap";
 import { CardContainer } from "../common/cardContainer";
 import { PropsWithChildren } from "react";
 import { Warning } from "../common/warning";
+import { SubjectSelector } from "../common/subjectSelector";
 
 const RowPanel = ({ title, children }: PropsWithChildren<{ title: string }>) => (
   <Row className="pb-1 pt-1 align-items-center">
@@ -28,7 +29,7 @@ type MyInfoCardProps = {
   isAdminVerified?: boolean;
   setBio: (bio: string) => void;
   setKtalkID: (ktalkID: string) => void;
-  setDesiredSubjects: (desiredSubjects: string[]) => void;
+  setDesiredSubjects: React.Dispatch<React.SetStateAction<string[]>>;
   onSubmit: () => void;
   onReset: () => void;
 };
@@ -51,9 +52,6 @@ export const MyInfoCard = ({
   onSubmit,
   onReset,
 }: MyInfoCardProps) => {
-  const subjects = ["english", "math", "science", "computer"];
-  const subjectsKor = ["영어", "수학", "과학", "컴퓨터"];
-
   return (
     <CardContainer>
       <Row className="pb-1 pt-1">
@@ -84,27 +82,7 @@ export const MyInfoCard = ({
         <Form.Control size="sm" type="text" value={ktalkID} onChange={(e) => setKtalkID(e.target.value)} />
       </RowPanel>
       <RowPanel title="희망과목">
-        <ToggleButtonGroup type="checkbox" style={{ width: "100%", justifyContent: "center" }}>
-          {subjects.map((subject, i) => (
-            <ToggleButton
-              key={subject}
-              id={subject}
-              size="sm"
-              value={i}
-              variant="outline-success"
-              active={desiredSubjects.includes(subject)}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setDesiredSubjects([...desiredSubjects, subject]);
-                } else {
-                  setDesiredSubjects(desiredSubjects.filter((s) => s !== subject));
-                }
-              }}
-            >
-              {subjectsKor[i]}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
+        <SubjectSelector dispatch={setDesiredSubjects} state={desiredSubjects} />
       </RowPanel>
 
       <Row className="pb-1 pt-1 ">

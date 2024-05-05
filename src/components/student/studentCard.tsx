@@ -2,6 +2,7 @@ import { UserDoc } from "@/types/userDoc";
 import { getAge } from "@/utils/getAge";
 import styled from "styled-components";
 import { Button } from "react-bootstrap";
+import { PropsWithChildren } from "react";
 
 const subjectMap: { [key: string]: string } = {
   english: "영어",
@@ -12,45 +13,48 @@ const subjectMap: { [key: string]: string } = {
 
 export const StudentCard = ({
   user,
-  onAdminVerify,
-}: {
+  children,
+  frame = true,
+}: PropsWithChildren<{
   user: UserDoc & { id: string };
-  onAdminVerify: () => void;
-}) => (
-  <ProfileContainer>
-    <ProfileImageContainer></ProfileImageContainer>
-    <ProfileDescription>
-      <div className="flex justify-content-between" style={{ width: "100%" }}>
-        <div className="flex flex-column justify-content-start">
-          <ProfileName>
-            {user.name}{" "}
-            <ProfileAux>{user.grade ? `${user.grade}학년` : `${getAge(user.birthday)}세`}</ProfileAux>
-          </ProfileName>
-          <ProfileEmail>{user.email}</ProfileEmail>
+  frame?: boolean;
+}>) => {
+  const Inner = () => (
+    <>
+      <ProfileImageContainer></ProfileImageContainer>
+      <ProfileDescription>
+        <div className="flex justify-content-between" style={{ width: "100%" }}>
+          <div className="flex flex-column justify-content-start">
+            <ProfileName>
+              {user.name}{" "}
+              <ProfileAux>{user.grade ? `${user.grade}학년` : `${getAge(user.birthday)}세`}</ProfileAux>
+            </ProfileName>
+            <ProfileEmail>{user.email}</ProfileEmail>
+          </div>
+          <div className="mr-2 mt-2">{children}</div>
         </div>
-        <div className="mr-2 mt-2">
-          {user.isAdminVerified ? (
-            <Button disabled variant="secondary" size="sm" style={{ width: "80px" }}>
-              승인됨
-            </Button>
-          ) : (
-            <Button onClick={onAdminVerify} variant="success" size="sm" style={{ width: "80px" }}>
-              승인
-            </Button>
-          )}
-        </div>
-      </div>
 
-      <DesiredSubjectsContainer>
-        {user.desiredSubjects.map((subject, index) => (
-          <DesiredSubject key={index}>{subjectMap[subject]}</DesiredSubject>
-        ))}
-      </DesiredSubjectsContainer>
+        <DesiredSubjectsContainer>
+          {user.desiredSubjects.map((subject, index) => (
+            <DesiredSubject key={index}>{subjectMap[subject]}</DesiredSubject>
+          ))}
+        </DesiredSubjectsContainer>
 
-      <ProfileAux>{user.bio}</ProfileAux>
-    </ProfileDescription>
-  </ProfileContainer>
-);
+        <ProfileAux>{user.bio}</ProfileAux>
+      </ProfileDescription>
+    </>
+  );
+
+  return frame ? (
+    <ProfileContainer>
+      <Inner />
+    </ProfileContainer>
+  ) : (
+    <ProfileContainerFrameless>
+      <Inner />
+    </ProfileContainerFrameless>
+  );
+};
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -66,21 +70,22 @@ const ProfileContainer = styled.div`
   padding: 6px;
 `;
 
+const ProfileContainerFrameless = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-left: 2px;
+  margin-right: 2px;
+  padding-left: 6px;
+  padding-right: 6px;
+  background: white;
+`;
+
 const ProfileImageContainer = styled.div`
   width: 70px;
   height: 70px;
   border-radius: 10px;
   background-color: pink;
 `;
-
-const ProfileUpperWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const ProfileNameEmailWrapper = styled.div``;
-
-const ProfileButtonWrapper = styled.div``;
 
 const ProfileDescription = styled.div`
   display: flex;
