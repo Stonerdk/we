@@ -2,38 +2,96 @@
 import { CommonLayout } from "@/components/background/commonLayout";
 import { useUser } from "@/hooks/useUser";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Protected from "../protected";
-import { collection, doc, orderBy, updateDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  documentId,
+  getDocs,
+  orderBy,
+  query,
+  startAfter,
+  Timestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "@/firebase/firebaseClient";
 import { UserDoc } from "@/types/userDoc";
 import { StudentCard } from "@/components/student/studentCard";
 import { useInfinityScroll } from "@/hooks/useInfinityScroll";
 import { Button } from "react-bootstrap";
+import { useMentoringSchedule } from "@/hooks/useMentoringSchedule";
+import { ClassesDoc } from "@/types/classesDoc";
+import { AdminClassCard } from "@/components/student/adminClassCard";
 
 const Page = () => {
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
   const { userDoc } = useUser(session, setLoading);
+  const { selectedDate, ScheduleSelector } = useMentoringSchedule();
+  const [userInfo, setUserInfo] = useState<{ [key: string]: UserDoc & { id: string } }>({});
+
+  const getTargetDate = () => {
+    return Timestamp.fromMillis(new Date(selectedDate).getTime());
+  };
 
   const {
     WrappedInfiniteScroll,
-
-    setEntries: setMentees,
-    entries: mentees,
-  } = useInfinityScroll<UserDoc>(
-    collection(db, "users"),
-    [where("isMentor", "==", true), orderBy("isAdminVerified", "asc"), orderBy("name")],
-    setLoading,
-    session
+    fetchEntries: fetchClasses,
+    setEntries: setClasses,
+    entries: classes,
+  } = useInfinityScroll<ClassesDoc>(
+    async () => {
+      setLoading(true);
+      const q = query(
+        collection(db, "classes"),
+        where("datetime", ">=", getTargetDate()),
+        where("datetime", "<", new Timestamp(getTargetDate().seconds + 86400, 0))
+      );
+      const docs = await getDocs(q);
+      setLoading(false);
+      return docs;
+    },
+    async (lastVisible) => {
+      const q = query(
+        collection(db, "classes"),
+        where("datetime", ">=", getTargetDate()),
+        where("datetime", "<", new Timestamp(getTargetDate().seconds + 86400, 0)),
+        startAfter(lastVisible)
+      );
+      return await getDocs(q);
+    }
   );
+
+  useEffect(() => {
+    const ids = classes
+      .reduce<string[]>((acc, cur) => [...acc, ...cur.menteeIDs, cur.mentorID], [])
+      .filter((id) => userInfo[id] === undefined && id !== "");
+    if (ids.length === 0) return;
+    console.log(ids);
+    const q = query(collection(db, "users"), where(documentId(), "in", ids));
+    getDocs(q).then(({ docs }) => {
+      const dr = docs.reduce<{ [key: string]: UserDoc & { id: string } }>(
+        (acc, cur) => ({ ...acc, [cur.id]: cur.data() as UserDoc & { id: string } }),
+        {}
+      );
+      setUserInfo({ ...userInfo, ...dr });
+    });
+  }, [classes]);
+
+  useEffect(() => {
+    if (session) {
+      fetchClasses();
+    }
+  }, [session, selectedDate]);
 
   const onAdminVerify = async (id: string) => {
     setLoading(true);
-    const userRef = doc(db, "users", id);
+    const userRef = doc(db, "classes", id);
     await updateDoc(userRef, { isAdminVerified: true });
     setLoading(false);
-    setMentees(mentees.map((mentee) => (mentee.id === id ? { ...mentee, isAdminVerified: true } : mentee)));
+    setClasses(classes.map((cl) => (cl.id === id ? { ...cl, isAdminVerified: true } : cl)));
   };
 
   if (!userDoc.isAdmin) {
@@ -47,26 +105,33 @@ const Page = () => {
   return (
     <Protected>
       <CommonLayout title="관리자" loading={loading}>
-        <WrappedInfiniteScroll>
-          {mentees.map((mentee, idx) => (
-            <StudentCard key={idx} user={mentee}>
-              {mentee.isAdminVerified ? (
-                <Button disabled variant="secondary" size="sm" style={{ width: "80px" }}>
-                  승인됨
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => onAdminVerify(mentee.id)}
-                  variant="success"
-                  size="sm"
-                  style={{ width: "80px" }}
-                >
-                  승인
-                </Button>
-              )}
-            </StudentCard>
-          ))}
-        </WrappedInfiniteScroll>
+        <ScheduleSelector>
+          <WrappedInfiniteScroll>
+            {classes.map((cl, idx) => (
+              <AdminClassCard
+                key={idx}
+                cl={cl}
+                mentor={userInfo[cl.mentorID] ?? null}
+                mentee={cl.menteeIDs.length > 0 ? userInfo[cl.menteeIDs[0]] ?? null : null}
+              >
+                {cl.isAdminVerified ? (
+                  <Button disabled variant="secondary" size="sm" style={{ width: "80px" }}>
+                    승인됨
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => onAdminVerify(cl.id)}
+                    variant="success"
+                    size="sm"
+                    style={{ width: "80px" }}
+                  >
+                    승인
+                  </Button>
+                )}
+              </AdminClassCard>
+            ))}
+          </WrappedInfiniteScroll>
+        </ScheduleSelector>
       </CommonLayout>
     </Protected>
   );

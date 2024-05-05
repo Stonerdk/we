@@ -1,8 +1,14 @@
 import React from "react";
 import { ToggleButtonGroup, ToggleButton } from "react-bootstrap";
 
-const subjects = ["english", "math", "science", "computer"];
-const subjectsKor = ["영어", "수학", "과학", "컴퓨터"];
+export const subjects = ["english", "math", "science", "computer"];
+export const subjectsKor = ["영어", "수학", "과학", "컴퓨터"];
+export const subjectMap: { [key: string]: string } = {
+  english: "영어",
+  math: "수학",
+  science: "과학",
+  computer: "컴퓨터",
+};
 
 export const SubjectSelector = ({
   dispatch,

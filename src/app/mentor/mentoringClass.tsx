@@ -14,15 +14,7 @@ import { CardContainer } from "@/components/common/cardContainer";
 import LoadingComponent from "@/components/common/loading";
 import { formatClassDuration } from "@/utils/dateUtil";
 import { SubjectSelector } from "@/components/common/subjectSelector";
-
-const RowPanel = ({ title, children }: PropsWithChildren<{ title: string }>) => (
-  <Row className="pb-1 pt-1 align-items-center">
-    <Col xs={3}>
-      <strong>{title}</strong>
-    </Col>
-    <Col>{children}</Col>
-  </Row>
-);
+import { RowPanel } from "@/components/common/rowPanel";
 export const MentorClass = ({
   session,
   cl,

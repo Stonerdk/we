@@ -1,11 +1,13 @@
 import { PropsWithChildren, SetStateAction, useCallback, useEffect, useState } from "react";
 import {
   CollectionReference,
+  DocumentData,
   getDocs,
   limit,
   query,
   QueryConstraint,
   QueryDocumentSnapshot,
+  QuerySnapshot,
   startAfter,
 } from "firebase/firestore";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -13,10 +15,8 @@ import LoadingComponent from "@/components/common/loading";
 import { Session } from "next-auth";
 
 export const useInfinityScroll = <T,>(
-  ref: CollectionReference,
-  queries: QueryConstraint[],
-  setLoading?: React.Dispatch<SetStateAction<boolean>>,
-  session?: Session | null,
+  querySnapshot: () => Promise<QuerySnapshot>,
+  queryMoreSnapshot: (lastVisible: QueryDocumentSnapshot | null) => Promise<QuerySnapshot>,
   lim: number = 5
 ) => {
   const [entries, setEntries] = useState<(T & { id: string })[]>([]);
@@ -24,23 +24,18 @@ export const useInfinityScroll = <T,>(
   const [hasMore, setHasMore] = useState(false);
 
   const fetchEntries = async () => {
-    setLoading?.(true);
-    const q = query(ref, ...queries, limit(lim));
-
-    const querySnapshot = await getDocs(q);
-    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    const snapshot = await querySnapshot();
+    const lastVisible = snapshot.docs[snapshot.docs.length - 1];
     setLastVisible(lastVisible);
-    setEntries(querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as T) })));
-    setLoading?.(false);
+    setEntries(snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as T) })));
   };
 
   const fetchMoreEntries = async () => {
     if (!lastVisible) return;
-    const q = query(ref, ...queries, startAfter(lastVisible), limit(lim));
-    const querySnapshot = await getDocs(q);
-    setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-    setEntries([...entries, ...querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as T) }))]);
-    setHasMore(querySnapshot.docs.length >= lim);
+    const snapshot = await queryMoreSnapshot(lastVisible);
+    setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+    setEntries([...entries, ...snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as T) }))]);
+    setHasMore(snapshot.docs.length >= lim);
   };
 
   const WrappedInfiniteScroll = ({ children }: PropsWithChildren) => {

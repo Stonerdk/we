@@ -1,5 +1,14 @@
 import React, { SetStateAction, useEffect, useState } from "react";
-import { addDoc, collection, orderBy, Timestamp, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  startAfter,
+  Timestamp,
+  where,
+} from "firebase/firestore";
 import { db } from "@/firebase/firebaseClient";
 import { UserDoc } from "@/types/userDoc";
 import { StudentCard } from "@/components/student/studentCard";
@@ -12,15 +21,24 @@ import LoadingComponent from "@/components/common/loading";
 export const MenteeList = ({ session, selectedDate }: { session: Session | null; selectedDate: string }) => {
   const [loading, setLoading] = useState(true);
   const [selectedMenteeId, setSelectedMenteeId] = useState<string>("");
-  const {
-    WrappedInfiniteScroll,
-    entries: mentees,
-    fetchEntries: fetchMentees,
-  } = useInfinityScroll<UserDoc>(
-    collection(db, "users"),
-    [where("isMentor", "==", false), orderBy("name")],
-    setLoading,
-    session
+
+  const { WrappedInfiniteScroll, entries: mentees } = useInfinityScroll<UserDoc>(
+    async () => {
+      setLoading(true);
+      const q = query(collection(db, "users"), where("isMentor", "==", false));
+      const docs = await getDocs(q);
+      setLoading(false);
+      return docs;
+    },
+    async (lastVisible) => {
+      const q = query(
+        collection(db, "users"),
+        where("isMentor", "==", false),
+        orderBy("name"),
+        startAfter(lastVisible)
+      );
+      return await getDocs(q);
+    }
   );
   const [confirmModal, setConfirmModal] = useState<boolean>(false);
 
@@ -34,10 +52,6 @@ export const MenteeList = ({ session, selectedDate }: { session: Session | null;
     });
     setLoading?.(false);
   };
-
-  useEffect(() => {
-    fetchMentees();
-  }, []);
 
   return (
     <>

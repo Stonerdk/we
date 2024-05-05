@@ -20,6 +20,7 @@ const Page = () => {
       const docRef = doc(db, "users", session!.user.uid);
       await setDoc(docRef, userDoc);
       console.log("업데이트 성공");
+      const u = (s: string[]) => s;
     }
   };
 
@@ -41,11 +42,12 @@ const Page = () => {
             desiredSubjects={userDoc.desiredSubjects}
             setBio={(bio: string) => setUserDoc({ ...userDoc, bio })}
             setKtalkID={(ktalkID: string) => setUserDoc({ ...userDoc, ktalkID })}
-            setDesiredSubjects={(desiredSubjects: string[]) => setUserDoc({ ...userDoc, desiredSubjects })}
+            setDesiredSubjects={(f: (s: string[]) => string[]) =>
+              setUserDoc({ ...userDoc, desiredSubjects: f(userDoc.desiredSubjects) })
+            }
             onSubmit={onSubmit}
             onReset={() => fetchUserData(session!.user.uid)}
           />
-          <AssociatedMentorCard isMentor={userDoc.isMentor} />
         </div>
       </CommonLayout>
     </Protected>
