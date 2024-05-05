@@ -1,7 +1,7 @@
 import { UserDoc } from "@/types/userDoc";
 import { getAge } from "@/utils/getAge";
 import styled from "styled-components";
-import { Button } from "react-bootstrap";
+import { Button, Image } from "react-bootstrap";
 import { PropsWithChildren } from "react";
 
 const subjectMap: { [key: string]: string } = {
@@ -21,7 +21,9 @@ export const StudentCard = ({
 }>) => {
   const Inner = () => (
     <>
-      <ProfileImageContainer></ProfileImageContainer>
+      <ProfileImageContainer>
+        <Image src={user.profileURL} roundedCircle alt="profile" />
+      </ProfileImageContainer>
       <ProfileDescription>
         <div className="flex justify-content-between" style={{ width: "100%" }}>
           <div className="flex flex-column justify-content-start">
@@ -84,7 +86,6 @@ const ProfileImageContainer = styled.div`
   width: 70px;
   height: 70px;
   border-radius: 10px;
-  background-color: pink;
 `;
 
 const ProfileDescription = styled.div`

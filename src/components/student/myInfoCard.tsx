@@ -1,5 +1,5 @@
 import type { FormData } from "../register/register";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button } from "react-bootstrap";
 import { CardContainer } from "../common/cardContainer";
 import { PropsWithChildren } from "react";
@@ -24,12 +24,14 @@ type MyInfoCardProps = {
   grade: string;
   isMentor: boolean;
   ktalkID: string;
+  profileURL: string;
   desiredSubjects: string[];
   isEmailVerified?: boolean;
   isAdminVerified?: boolean;
   setBio: (bio: string) => void;
   setKtalkID: (ktalkID: string) => void;
   setDesiredSubjects: React.Dispatch<React.SetStateAction<string[]>>;
+  setProfileImage: (file: File) => void;
   onSubmit: () => void;
   onReset: () => void;
 };
@@ -41,6 +43,7 @@ export const MyInfoCard = ({
   bio,
   grade,
   email,
+  profileURL,
   isMentor,
   ktalkID,
   desiredSubjects,
@@ -49,11 +52,36 @@ export const MyInfoCard = ({
   setBio,
   setKtalkID,
   setDesiredSubjects,
+  setProfileImage,
   onSubmit,
   onReset,
 }: MyInfoCardProps) => {
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [profileImageError, setProfileImageError] = useState<string>("");
   return (
     <CardContainer>
+      <Form.Control
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = (e.target as HTMLInputElement).files?.[0];
+          if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+              setProfileImageError("10MB 이하의 이미지 파일을 선택해주세요.");
+              return;
+            }
+            if (!file.type.startsWith("image/")) {
+              setProfileImageError("이미지 파일을 선택해주세요.");
+              return;
+            } else {
+              setProfileImageError("");
+            }
+            setProfileImage(file);
+          }
+        }}
+        style={{ marginBottom: "5px", display: "none" }}
+        ref={imageInputRef}
+      />
       <Row className="pb-1 pt-1">
         <Col>
           <div style={{ fontSize: "18px" }}>
@@ -64,7 +92,15 @@ export const MyInfoCard = ({
       <Row className="pb-1 pt-1 justify-content-center align-items-center">
         <Col xs={4}>
           {/* <div style={{ width: "100%", height: "100%" }}> */}
-          <Image src="https://via.placeholder.com/150" roundedCircle alt="profile" />
+          <Image
+            src={profileURL}
+            roundedCircle
+            alt="profile"
+            onClick={() => {
+              imageInputRef?.current?.click();
+            }}
+            style={{ width: "100px", height: "100px", objectFit: "cover" }}
+          />
           {/* </div> */}
         </Col>
         <Col>
@@ -74,6 +110,7 @@ export const MyInfoCard = ({
           <RowPanel title="학년">{grade}</RowPanel>
         </Col>
       </Row>
+      {profileImageError && <Warning>{profileImageError}</Warning>}
 
       <RowPanel title="이메일">
         <Form.Control size="sm" type="text" value={email} disabled />

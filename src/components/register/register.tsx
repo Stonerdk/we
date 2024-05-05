@@ -13,6 +13,10 @@ import Phase5 from "./phase5";
 import { defaultUserDoc, UserDoc } from "@/types/userDoc";
 
 import "./register.css";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db, storage } from "@/firebase/firebaseClient";
+import { doc, setDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export type FormData = UserDoc & { password: string };
 type EventHandler = (
@@ -34,7 +38,7 @@ const initialValues: FormData = {
 export const RegisterComponent = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>(initialValues);
-  const [profileImageUrl, setProfileImageUrl] = useState<string>("");
+  const [profileImage, setProfileImage] = useState<File | null>(null);
   const [phase, setPhase] = useState(0);
 
   const handleChange: EventHandler = (e) => {
@@ -45,14 +49,18 @@ export const RegisterComponent = () => {
   };
 
   const submitRegister = async () => {
-    try {
-      const response = await axios.post("/api/register", formData);
-      console.log(response.data);
-      router.push("/");
-    } catch (error) {
-      console.error(error);
-      router.push("/");
+    const { password, ...formDataWithoutPassword } = formData;
+    const userCredential = await createUserWithEmailAndPassword(auth, formData.email, password);
+    const user = userCredential.user;
+
+    if (profileImage) {
+      const storageRef = ref(storage, `profileImages/${user.uid}`);
+      await uploadBytes(storageRef, profileImage);
+      const imageUrl = await getDownloadURL(storageRef);
+      formDataWithoutPassword.profileURL = imageUrl;
     }
+
+    await setDoc(doc(db, "users", user.uid), formDataWithoutPassword);
   };
 
   return (
@@ -75,8 +83,7 @@ export const RegisterComponent = () => {
           formData={formData}
           handleChange={handleChange}
           setPhase={setPhase}
-          profileImageUrl={profileImageUrl}
-          setProfileImageUrl={setProfileImageUrl}
+          setProfileImage={setProfileImage}
         />
       ) : phase == 4 ? (
         <Phase4

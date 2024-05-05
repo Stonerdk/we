@@ -19,10 +19,15 @@ import { defaultClassesDoc } from "@/types/classesDoc";
 import LoadingComponent from "@/components/common/loading";
 
 export const MenteeList = ({ session, selectedDate }: { session: Session | null; selectedDate: string }) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedMenteeId, setSelectedMenteeId] = useState<string>("");
+  const [confirmModal, setConfirmModal] = useState<boolean>(false);
 
-  const { WrappedInfiniteScroll, entries: mentees } = useInfinityScroll<UserDoc>(
+  const {
+    WrappedInfiniteScroll,
+    entries: mentees,
+    fetchEntries: fetchMentees,
+  } = useInfinityScroll<UserDoc>(
     async () => {
       setLoading(true);
       const q = query(collection(db, "users"), where("isMentor", "==", false));
@@ -40,7 +45,12 @@ export const MenteeList = ({ session, selectedDate }: { session: Session | null;
       return await getDocs(q);
     }
   );
-  const [confirmModal, setConfirmModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (session) {
+      fetchMentees();
+    }
+  }, [session]);
 
   const onApplyMentee = async (id: string) => {
     setLoading?.(true);

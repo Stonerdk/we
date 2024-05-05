@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { RowPanel } from "../common/rowPanel";
 import { subjectMap } from "../common/subjectSelector";
 import { UserDoc } from "@/types/userDoc";
+import { Image } from "react-bootstrap";
 
 export const AdminClassCard = ({
   cl,
@@ -23,7 +24,20 @@ export const AdminClassCard = ({
     isMentor: boolean;
   }) => (
     <SmallUserPanelContainer>
-      <ProfileImageContainer />
+      <ProfileImageContainer>
+        {user && (
+          <Image
+            src={user.profileURL}
+            roundedCircle
+            alt="profile"
+            style={{
+              width: "40px",
+              height: "40px",
+              objectFit: "cover",
+            }}
+          />
+        )}
+      </ProfileImageContainer>
       <ProfileDescription>
         <ProfileName>
           <small>
@@ -119,7 +133,6 @@ const ProfileImageContainer = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background-color: pink;
 `;
 
 const ProfileDescription = styled.div`

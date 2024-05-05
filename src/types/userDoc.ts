@@ -11,6 +11,7 @@ export interface UserDoc {
   isEmailVerified: boolean;
   isAdminVerified?: boolean;
   isAdmin?: boolean;
+  profileURL: string;
 }
 
 export const defaultUserDoc: UserDoc = {
@@ -26,4 +27,5 @@ export const defaultUserDoc: UserDoc = {
   isEmailVerified: false,
   isAdminVerified: false,
   isAdmin: false,
+  profileURL: "",
 };
