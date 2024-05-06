@@ -14,7 +14,7 @@ export const SubjectSelector = ({
   dispatch,
   state,
 }: {
-  dispatch: React.Dispatch<React.SetStateAction<string[]>>;
+  dispatch: React.Dispatch<React.SetStateAction<string[]>> | ((f: (s: string[]) => string[]) => void);
   state: string[];
 }) => {
   return (

@@ -5,13 +5,13 @@ import { FormEvent, useState } from "react";
 import { Warning } from "../common/warning";
 import { wrapComponent } from "../../utils/wrap";
 import { RequiredAst } from "../common/symbol";
+import { useWarningToast } from "@/hooks/useWarningToast";
 
 const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData, submitRegister }) => {
   const rules = ruleFactory("bio");
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [showToast, setShowToast] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<JSX.Element>(<></>);
+  const { openToast, WarningToast } = useWarningToast();
 
   const subjects = ["english", "math", "science", "computer"];
   const subjectsKor = ["영어", "수학", "과학", "컴퓨터"];
@@ -34,15 +34,7 @@ const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData,
       await submitRegister();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
-      setToastMessage(
-        <>
-          회원가입에 실패했습니다.
-          <br />
-          {msg.substring(16)}
-        </>
-      );
-      setShowToast(true);
-      setLoading(false);
+      openToast(`회원가입에 실패했습니다.\n${msg}`);
       return;
     }
     setLoading(false);
@@ -96,21 +88,7 @@ const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData,
           </div>
         </Form.Group>
       </Form>
-      <Toast
-        onClose={() => {
-          setShowToast(false);
-          setToastMessage(<></>);
-        }}
-        delay={3000}
-        show={showToast}
-        autohide
-        animation={true}
-        style={{ position: "absolute", bottom: "2%", left: "5%", width: "90%" }}
-      >
-        <Toast.Body>
-          <Warning>{toastMessage}</Warning>
-        </Toast.Body>
-      </Toast>
+      <WarningToast style={{ bottom: "2%" }} />
     </div>
   );
 };

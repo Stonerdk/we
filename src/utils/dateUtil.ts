@@ -13,7 +13,7 @@ export const nextClosestDate = (mentoringDates: string[]) => {
   return nextDateIndex === -1 ? mentoringDates.length - 1 : nextDateIndex;
 };
 
-export const formatClassDuration = (startTime, durationMinutes) => {
+export const formatClassDuration = (startTime: Date, durationMinutes: number) => {
   // 시작 시간을 12시간제로 변환하고 AM 또는 PM을 결정합니다.
   const startHour = startTime.getHours() % 12 || 12; // 12시간제로 변환
   const startMinutes = startTime.getMinutes();

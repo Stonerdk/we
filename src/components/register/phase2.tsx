@@ -5,10 +5,11 @@ import { FormEvent, Fragment, useState } from "react";
 import { Warning } from "../common/warning";
 import { wrapComponent } from "../../utils/wrap";
 import { RequiredAst } from "../common/symbol";
+import { useWarningToast } from "@/hooks/useWarningToast";
 
 const Phase2: PhaseComponent = ({ formData, handleChange, setPhase, checkValidEmail }) => {
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
-  const [showToast, setShowToast] = useState<boolean>(false);
+  const { openToast, WarningToast } = useWarningToast();
   const [loading, setLoading] = useState<boolean>(false);
   const rules = ruleFactory<RegisterFormData>("email", "password");
   const emailRE = formData.isMentor
@@ -33,7 +34,7 @@ const Phase2: PhaseComponent = ({ formData, handleChange, setPhase, checkValidEm
     if (res) {
       setPhase(3);
     } else {
-      setShowToast(true);
+      openToast("이미 존재하는 이메일입니다.");
     }
   };
 
@@ -99,23 +100,7 @@ const Phase2: PhaseComponent = ({ formData, handleChange, setPhase, checkValidEm
           </div>
         </Form.Group>
       </Form>
-
-      <Toast
-        onClose={() => setShowToast(false)}
-        delay={3000}
-        show={showToast}
-        autohide
-        animation={true}
-        style={{ position: "absolute", bottom: "2%", left: "5%", width: "90%" }}
-      >
-        <Toast.Body>
-          <Warning>
-            중복된 이메일이 존재합니다.
-            <br />
-            다른 이메일을 입력해주세요.
-          </Warning>
-        </Toast.Body>
-      </Toast>
+      <WarningToast style={{ bottom: "2%" }} />
     </div>
   );
 };

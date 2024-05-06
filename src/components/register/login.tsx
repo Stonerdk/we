@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { Form, Button, Spinner, Toast } from "react-bootstrap";
 import { signIn } from "next-auth/react";
 import { Warning } from "../common/warning";
+import { useWarningToast } from "@/hooks/useWarningToast";
 
 export const LoginComponent = () => {
   const router = useRouter();
@@ -10,8 +11,8 @@ export const LoginComponent = () => {
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [showToast, setShowToast] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<JSX.Element>(<></>);
+
+  const { openToast, WarningToast } = useWarningToast();
 
   const handleLogin: FormEventHandler = async (event) => {
     event.preventDefault();
@@ -30,8 +31,7 @@ export const LoginComponent = () => {
           ? "이메일 혹은 비밀번호가 일치하지 않습니다."
           : "알 수 없는 이유로 로그인에 실패했습니다.";
       setLoading(false);
-      setShowToast(true);
-      setToastMessage(<>{msg}</>);
+      openToast(msg);
     }
   };
 
@@ -93,6 +93,7 @@ export const LoginComponent = () => {
               width: "100%",
               flexGrow: 1,
               borderRadius: "10px",
+              marginBottom: "5px",
             }}
             onClick={() => router.push("/register")}
           >
@@ -105,27 +106,15 @@ export const LoginComponent = () => {
               color: "black",
               borderRadius: "10px",
             }}
-            onClick={() => router.push("/register")}
+            onClick={() => {
+              openToast("아직 지원되지 않는 기능입니다.");
+            }}
           >
             비밀번호를 잊으셨나요?
           </Button>
         </div>
       </Form>
-      <Toast
-        onClose={() => {
-          setShowToast(false);
-          setToastMessage(<></>);
-        }}
-        delay={3000}
-        show={showToast}
-        autohide
-        animation={true}
-        style={{ position: "absolute", top: "-35%", left: "5%", width: "90%" }}
-      >
-        <Toast.Body>
-          <Warning>{toastMessage}</Warning>
-        </Toast.Body>
-      </Toast>
+      <WarningToast style={{ top: "-35%" }} />
     </div>
   );
 };

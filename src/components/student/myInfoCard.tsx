@@ -1,6 +1,5 @@
-import type { RegisterFormData } from "../register/register";
 import React, { useRef, useState } from "react";
-import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button } from "react-bootstrap";
+import { Row, Col, Image, Form, Button } from "react-bootstrap";
 import { CardContainer } from "../common/cardContainer";
 import { PropsWithChildren } from "react";
 import { Warning } from "../common/warning";
@@ -28,7 +27,9 @@ type MyInfoCardProps = {
   desiredSubjects: string[];
   setBio: (bio: string) => void;
   setKtalkID: (ktalkID: string) => void;
-  setDesiredSubjects: React.Dispatch<React.SetStateAction<string[]>>;
+  setDesiredSubjects:
+    | React.Dispatch<React.SetStateAction<string[]>>
+    | ((f: (s: string[]) => string[]) => void);
   setProfileImage: (file: File) => void;
   onSubmit: () => void;
   onReset: () => void;
