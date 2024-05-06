@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo, SetStateAction, FormEventHandler } from "react";
+import { useState, FormEventHandler } from "react";
 import { useRouter } from "next/navigation";
-import { Form, Button, Spinner, Toast } from "react-bootstrap";
-import { signIn } from "next-auth/react";
-import { Warning } from "../common/warning";
+import { Form, Button, Spinner } from "react-bootstrap";
 import { useWarningToast } from "@/hooks/useWarningToast";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase/firebaseClient";
 
 export const LoginComponent = () => {
   const router = useRouter();
@@ -17,17 +17,13 @@ export const LoginComponent = () => {
   const handleLogin: FormEventHandler = async (event) => {
     event.preventDefault();
     setLoading(true);
-    const res = await signIn("credentials", {
-      email: email,
-      password: password,
-      redirect: false,
-    });
-    if (res?.ok) {
+    try {
+      const res = await signInWithEmailAndPassword(auth, email, password);
       setLoading(false);
       router.push("/");
-    } else {
-      let msg =
-        res?.error === "CredentialsSignin"
+    } catch (error) {
+      const msg =
+        (error as Error).message === "CredentialsSignin"
           ? "이메일 혹은 비밀번호가 일치하지 않습니다."
           : "알 수 없는 이유로 로그인에 실패했습니다.";
       setLoading(false);

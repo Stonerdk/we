@@ -4,10 +4,9 @@ import { db } from "@/firebase/firebaseClient";
 import { ClassesDoc } from "@/types/classesDoc";
 import { UserDoc } from "@/types/userDoc";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { Session } from "next-auth";
 import { SetStateAction, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button } from "react-bootstrap";
+import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button, Spinner } from "react-bootstrap";
 
 import { PropsWithChildren } from "react";
 import { CardContainer } from "@/components/common/cardContainer";
@@ -31,11 +30,9 @@ const RowPanel = ({ title, children }: PropsWithChildren<{ title: string }>) => 
   </Row>
 );
 export const MenteeClass = ({
-  session,
   cl,
   setCl,
 }: {
-  session: Session | null;
   cl: ClassesDoc & { id: string };
   setCl: React.Dispatch<SetStateAction<(ClassesDoc & { id: string }) | null>>;
 }) => {
@@ -44,20 +41,21 @@ export const MenteeClass = ({
 
   useEffect(() => {
     const fetchUser = async () => {
+      setLoading(true);
       if (cl.menteeIDs.length === 0) return;
       const res = await getDoc(doc(db, "users", cl.mentorID));
       setUserDoc(res.data() as UserDoc & { id: string });
+      setLoading(false);
     };
     fetchUser();
   }, []);
 
-  if (loading) return <LoadingComponent />;
+  if (loading || !userDoc) return <></>;
   return (
     <CardContainer style={{ marginTop: "5px" }}>
       <div className="m-2">
         <b>내 멘토</b>
       </div>
-
       {userDoc && <StudentCard user={userDoc} frame={false} />}
       <div className="ml-2 mr-2">
         <RowPanel title="시간">{formatClassDuration(cl.datetime.toDate(), cl.duration)}</RowPanel>

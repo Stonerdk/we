@@ -12,7 +12,6 @@ import {
 } from "firebase/firestore";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingComponent from "@/components/common/loading";
-import { Session } from "next-auth";
 
 export const useInfinityScroll = <T,>(
   querySnapshot: () => Promise<QuerySnapshot>,

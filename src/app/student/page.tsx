@@ -1,69 +1,81 @@
 "use client";
 
 import { CommonLayout } from "@/components/background/commonLayout";
-import { AssociatedMentorCard } from "@/components/student/AssociatedMentorCard";
 import { MyInfoCard } from "@/components/student/myInfoCard";
 import { db, storage } from "@/firebase/firebaseClient";
 import { useUser } from "@/hooks/useUser";
 import { doc, setDoc } from "firebase/firestore";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Protected from "../protected";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { defaultUserDoc, UserDoc } from "@/types/userDoc";
 
 const Page = () => {
-  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
-  const { userDoc, setUserDoc, fetchUserData } = useUser(session, setLoading);
-  //const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [newUser, setNewUser] = useState<UserDoc>({ ...defaultUserDoc });
+  const { user } = useUser(setLoading, setNewUser);
+
+  const [dirty, setDirty] = useState(false);
+
+  const setUser = (newUser: UserDoc) => {
+    setNewUser(newUser);
+    setDirty(true);
+  };
 
   const onSubmit = async () => {
-    if (session) {
+    if (user) {
       setLoading(true);
-      const docRef = doc(db, "users", session!.user.uid);
-      await setDoc(docRef, userDoc);
+      const docRef = doc(db, "users", user.id!);
+      await setDoc(docRef, user);
       setLoading(false);
     }
   };
 
   const setProfileImage = async (file: File | null) => {
     if (file) {
-      const storageRef = ref(storage, `profileImages/${session!.user.uid}`);
       setLoading(true);
+      const storageRef = ref(storage, `profileImages/${user!.id}`);
       await uploadBytes(storageRef, file);
       const imageUrl = await getDownloadURL(storageRef);
+      setUser({ ...newUser, profileURL: imageUrl });
       setLoading(false);
-      setUserDoc({ ...userDoc, profileURL: imageUrl });
     }
   };
 
   return (
-    <Protected>
-      <CommonLayout title="내 정보" loading={loading}>
-        <div className="fcg10">
-          <MyInfoCard
-            isMentor={userDoc.isMentor}
-            username={userDoc.name}
-            birthday={userDoc.birthday.replace(/(\d{2})(\d{2})(\d{2})/, "$1. $2. $3")}
-            gender={userDoc.gender === "male" ? "남성" : userDoc.gender === "female" ? "여성" : "기타"}
-            bio={userDoc.bio}
-            email={userDoc.email}
-            grade={userDoc.grade ?? ""}
-            ktalkID={userDoc.ktalkID}
-            profileURL={userDoc.profileURL}
-            desiredSubjects={userDoc.desiredSubjects}
-            setProfileImage={setProfileImage}
-            setBio={(bio: string) => setUserDoc({ ...userDoc, bio })}
-            setKtalkID={(ktalkID: string) => setUserDoc({ ...userDoc, ktalkID })}
-            setDesiredSubjects={(f: (s: string[]) => string[]) =>
-              setUserDoc({ ...userDoc, desiredSubjects: f(userDoc.desiredSubjects) })
-            }
-            onSubmit={onSubmit}
-            onReset={() => fetchUserData(session!.user.uid)}
-          />
-        </div>
-      </CommonLayout>
-    </Protected>
+    <>
+      <Protected>
+        <CommonLayout title="내 정보" loading={loading}>
+          {user && (
+            <div className="fcg10">
+              <MyInfoCard
+                isMentor={newUser.isMentor}
+                username={newUser.name}
+                birthday={newUser.birthday.replace(/(\d{2})(\d{2})(\d{2})/, "$1. $2. $3")}
+                gender={newUser.gender === "male" ? "남성" : newUser.gender === "female" ? "여성" : "기타"}
+                bio={newUser.bio}
+                email={newUser.email}
+                grade={newUser.grade ?? ""}
+                ktalkID={newUser.ktalkID}
+                profileURL={newUser.profileURL}
+                desiredSubjects={newUser.desiredSubjects}
+                setProfileImage={setProfileImage}
+                setBio={(bio: string) => setUser({ ...newUser, bio })}
+                setKtalkID={(ktalkID: string) => setUser({ ...newUser, ktalkID })}
+                setDesiredSubjects={(s: string[]) => setUser({ ...newUser, desiredSubjects: s })}
+                onSubmit={onSubmit}
+                onReset={() => {
+                  if (user) {
+                    setNewUser(user);
+                    setDirty(false);
+                  }
+                }}
+              />
+            </div>
+          )}
+        </CommonLayout>
+      </Protected>
+    </>
   );
 };
 

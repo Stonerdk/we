@@ -27,9 +27,7 @@ type MyInfoCardProps = {
   desiredSubjects: string[];
   setBio: (bio: string) => void;
   setKtalkID: (ktalkID: string) => void;
-  setDesiredSubjects:
-    | React.Dispatch<React.SetStateAction<string[]>>
-    | ((f: (s: string[]) => string[]) => void);
+  setDesiredSubjects: React.Dispatch<React.SetStateAction<string[]>> | ((state: string[]) => void);
   setProfileImage: (file: File) => void;
   onSubmit: () => void;
   onReset: () => void;
@@ -55,6 +53,8 @@ export const MyInfoCard = ({
 }: MyInfoCardProps) => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [profileImageError, setProfileImageError] = useState<string>("");
+  const randomQ = `${Math.random()}`;
+
   return (
     <CardContainer>
       <Form.Control
@@ -90,7 +90,7 @@ export const MyInfoCard = ({
         <Col xs={4}>
           {/* <div style={{ width: "100%", height: "100%" }}> */}
           <Image
-            src={profileURL}
+            src={profileURL + randomQ}
             roundedCircle
             alt="profile"
             onClick={() => {

@@ -13,12 +13,13 @@ import btnStudent from "/public/assets/main/btn_student.png";
 import btnTown from "/public/assets/main/btn_town.png";
 import btnAdmin from "/public/assets/main/btn_admin.png";
 import { Button, Spinner } from "react-bootstrap";
-import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useUser } from "@/hooks/useUser";
 import { useWarningToast } from "@/hooks/useWarningToast";
 import styled from "styled-components";
+import { auth } from "@/firebase/firebaseClient";
+import { signOut } from "firebase/auth";
 
 const Overlay = styled.div<{ isactive: string }>`
   position: fixed;
@@ -37,9 +38,8 @@ const Overlay = styled.div<{ isactive: string }>`
 `;
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
-  const { data: session, status } = useSession();
-  const { userDoc } = useUser(session, setLoading);
+  const [loading, setLoading] = useState(false);
+  const { user } = useUser(setLoading);
   const { openToast, WarningToast } = useWarningToast();
 
   const router = useRouter();
@@ -117,9 +117,8 @@ export default function Home() {
           src={btnAdmin}
           alt={"관리자"}
           style={{ width: "25%", left: "75%", top: "71%" }}
-          aria-disabled={!userDoc.isAdmin}
           onClick={() => {
-            if (userDoc.isAdmin) {
+            if (user?.isAdmin) {
               setLoading(true);
               router.push("/admin");
             } else {
@@ -132,8 +131,7 @@ export default function Home() {
           variant="link"
           onClick={async () => {
             setLoading(true);
-            await signOut();
-            //await new Promise((resolve) => setTimeout(resolve, 1000));
+            await signOut(auth);
             setLoading(false);
           }}
           style={{

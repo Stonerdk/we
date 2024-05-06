@@ -12,14 +12,15 @@ import {
 import { db } from "@/firebase/firebaseClient";
 import { UserDoc } from "@/types/userDoc";
 import { StudentCard } from "@/components/student/studentCard";
-import { Session } from "next-auth";
 import { useInfinityScroll } from "@/hooks/useInfinityScroll";
 import { Button, Modal } from "react-bootstrap";
 import { defaultClassesDoc } from "@/types/classesDoc";
 import LoadingComponent from "@/components/common/loading";
+import { useUser } from "@/hooks/useUser";
 
-export const MenteeList = ({ session, selectedDate }: { session: Session | null; selectedDate: string }) => {
+export const MenteeList = ({ selectedDate }: { selectedDate: string }) => {
   const [loading, setLoading] = useState(false);
+  const { user } = useUser(setLoading);
   const [selectedMenteeId, setSelectedMenteeId] = useState<string>("");
   const [confirmModal, setConfirmModal] = useState<boolean>(false);
 
@@ -47,16 +48,16 @@ export const MenteeList = ({ session, selectedDate }: { session: Session | null;
   );
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       fetchMentees();
     }
-  }, [session]);
+  }, [user]);
 
   const onApplyMentee = async (id: string) => {
     setLoading?.(true);
     await addDoc(collection(db, "classes"), {
       ...defaultClassesDoc,
-      mentorID: session!.user.uid,
+      mentorID: user!.id,
       menteeIDs: [id],
       datetime: Timestamp.fromMillis(new Date(selectedDate).getTime()),
     });

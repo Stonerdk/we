@@ -53,21 +53,23 @@ export const AdminClassCard = ({
             <CopyToClipboard text={user.email}>
               <MdEmail
                 color="gray"
-                fontSize="1em"
+                fontSize="1.5em"
                 onClick={() => {
                   window.location.href = "mailto:" + user.email;
                 }}
               />
             </CopyToClipboard>
-            <CopyToClipboard text={user.ktalkID}>
-              <RiKakaoTalkFill
-                color="gray"
-                fontSize="1em"
-                onClick={() => {
-                  window.location.href = "kakaotalk://profile/" + user.ktalkID;
-                }}
-              />
-            </CopyToClipboard>
+            {/* {user.ktalkID && (
+              <CopyToClipboard text={user.ktalkID}>
+                <RiKakaoTalkFill
+                  color="gray"
+                  fontSize="1.5em"
+                  onClick={() => {
+                    //window.location.href = "kakaotalk://profile/" + user.ktalkID;
+                  }}
+                />
+              </CopyToClipboard>
+            )} */}
           </div>
         )}
       </ProfileDescription>

@@ -9,12 +9,19 @@
 }
 
 body {
+  touch-action: none;
+  overflow: hidden;
   background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+.scrollable-element {
+  touch-action: auto;
+  overflow-y: scroll; /* 필요에 따라 스크롤 가능한 요소에 overflow 속성을 추가 */
 }
 
 .fcg10 {

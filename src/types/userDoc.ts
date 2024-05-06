@@ -12,6 +12,7 @@ export interface UserDoc {
   isAdminVerified?: boolean;
   isAdmin?: boolean;
   profileURL: string;
+  id?: string;
 }
 
 export const defaultUserDoc: UserDoc = {
@@ -27,5 +28,5 @@ export const defaultUserDoc: UserDoc = {
   isEmailVerified: false,
   isAdminVerified: false,
   isAdmin: false,
-  profileURL: "",
+  profileURL: "https://projectwe-421109.firebaseapp.com/assets/main/blank_profile.png",
 };

@@ -2,38 +2,49 @@
 
 import { PropsWithChildren, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, SessionProvider } from "next-auth/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebaseClient";
+import { BackgroundComponent } from "@/components/background/background";
+import { Spinner } from "react-bootstrap";
+import styled from "styled-components";
+
+const Overlay = styled.div<{ isactive: string }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: ${(props) => (props.isactive === "true" ? 1000 : -1)};
+  opacity: ${(props) => (props.isactive === "true" ? 1 : 0)};
+  backdrop-filter: blur(3px);
+  transition: opacity 0.2s ease-in-out;
+`;
 
 const Protected = ({ children }: PropsWithChildren): JSX.Element => {
   const router = useRouter();
-  const [user, authLoading] = useAuthState(auth);
-
-  const { status: sessionStatus } = useSession();
-  const authorized = sessionStatus === "authenticated";
-  const unAuthorized = sessionStatus === "unauthenticated";
-  const loading = sessionStatus === "loading";
+  const [user, loading] = useAuthState(auth);
 
   useEffect(() => {
-    console.log(user);
-    if (loading) return;
-
-    if (unAuthorized) {
-      console.log("not authorized");
+    if (!loading && !user) {
       router.push("/login");
     }
-  }, [loading, unAuthorized, sessionStatus, router]);
+  }, [user, loading, router]);
 
   if (loading) {
-    return <></>;
+    return (
+      <BackgroundComponent>
+        <Overlay isactive={loading ? "true" : "false"}>
+          <Spinner animation="border" variant="white" />
+        </Overlay>
+      </BackgroundComponent>
+    );
   }
 
-  return authorized ? <div>{children}</div> : <></>;
+  return <BackgroundComponent>{user && children}</BackgroundComponent>;
 };
-
-export function AuthSession({ children }: PropsWithChildren) {
-  return <SessionProvider>{children}</SessionProvider>;
-}
 
 export default Protected;

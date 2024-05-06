@@ -4,23 +4,18 @@ import { db } from "@/firebase/firebaseClient";
 import { ClassesDoc } from "@/types/classesDoc";
 import { UserDoc } from "@/types/userDoc";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { Session } from "next-auth";
 import { SetStateAction, useEffect, useState } from "react";
-import styled from "styled-components";
-import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
-import { PropsWithChildren } from "react";
 import { CardContainer } from "@/components/common/cardContainer";
 import LoadingComponent from "@/components/common/loading";
 import { formatClassDuration } from "@/utils/dateUtil";
 import { SubjectSelector } from "@/components/common/subjectSelector";
 import { RowPanel } from "@/components/common/rowPanel";
 export const MentorClass = ({
-  session,
   cl,
   setCl,
 }: {
-  session: Session | null;
   cl: ClassesDoc & { id: string };
   setCl: React.Dispatch<SetStateAction<(ClassesDoc & { id: string }) | null>>;
 }) => {

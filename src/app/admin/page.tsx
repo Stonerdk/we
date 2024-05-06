@@ -1,7 +1,6 @@
 "use client";
 import { CommonLayout } from "@/components/background/commonLayout";
 import { useUser } from "@/hooks/useUser";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Protected from "../protected";
 import {
@@ -9,7 +8,6 @@ import {
   doc,
   documentId,
   getDocs,
-  orderBy,
   query,
   startAfter,
   Timestamp,
@@ -18,7 +16,6 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase/firebaseClient";
 import { UserDoc } from "@/types/userDoc";
-import { StudentCard } from "@/components/student/studentCard";
 import { useInfinityScroll } from "@/hooks/useInfinityScroll";
 import { Button } from "react-bootstrap";
 import { useMentoringSchedule } from "@/hooks/useMentoringSchedule";
@@ -26,9 +23,8 @@ import { ClassesDoc } from "@/types/classesDoc";
 import { AdminClassCard } from "@/components/student/adminClassCard";
 
 const Page = () => {
-  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
-  const { userDoc } = useUser(session, setLoading);
+  const { user } = useUser(setLoading);
   const { selectedDate, ScheduleSelector } = useMentoringSchedule();
   const [userInfo, setUserInfo] = useState<{ [key: string]: UserDoc & { id: string } }>({});
 
@@ -81,10 +77,10 @@ const Page = () => {
   }, [classes]);
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       fetchClasses();
     }
-  }, [session, selectedDate]);
+  }, [user, selectedDate]);
 
   const onAdminVerify = async (id: string) => {
     setLoading(true);
@@ -94,7 +90,7 @@ const Page = () => {
     setClasses(classes.map((cl) => (cl.id === id ? { ...cl, isAdminVerified: true } : cl)));
   };
 
-  if (!userDoc.isAdmin) {
+  if (!user || !user.isAdmin) {
     return (
       <CommonLayout title="관리자">
         <div>관리자만 접근 가능합니다.</div>

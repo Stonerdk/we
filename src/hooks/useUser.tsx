@@ -1,39 +1,36 @@
 import { doc, getDoc } from "firebase/firestore";
 
-import { SetStateAction, useCallback, useEffect, useState } from "react";
-import { db } from "@/firebase/firebaseClient";
-import { UserDoc, defaultUserDoc } from "@/types/userDoc";
-import { Session } from "next-auth";
+import { useEffect, useState } from "react";
+import { auth, db } from "@/firebase/firebaseClient";
+import { UserDoc } from "@/types/userDoc";
 
 export const useUser = (
-  session: Session | null,
-  setLoading?: React.Dispatch<SetStateAction<boolean>>,
-  noSessionHandler?: () => void
+  setLoading?: React.Dispatch<React.SetStateAction<boolean>>,
+  callback?: (u: UserDoc) => void
 ) => {
-  const [userDoc, setUserDoc] = useState<UserDoc>(defaultUserDoc);
-  const fetchUserData = useCallback(
-    async (uid: string) => {
-      if (session) {
-        setLoading?.(true);
-        const docRef = doc(db, "users", uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          setUserDoc(docSnap.data() as UserDoc);
-        } else {
-          noSessionHandler?.();
-        }
-        setLoading?.(false);
-      } else {
-        noSessionHandler?.();
-      }
-    },
-    [noSessionHandler, session, setLoading]
-  );
+  const [userData, setUserData] = useState<UserDoc | null>(null);
 
   useEffect(() => {
-    if (session) fetchUserData(session.user.uid);
-  }, [session, fetchUserData]);
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      setLoading?.(true);
+      if (user) {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const userInfo = { id: docSnap.id, ...docSnap.data() } as UserDoc;
+          setUserData(userInfo);
+          callback?.(userInfo);
+        } else {
+          setUserData(null);
+        }
+      } else {
+        setUserData(null); // inconsistent DB! (auth != firestore)
+      }
+      setLoading?.(false);
+    });
 
-  return { userDoc, setUserDoc, fetchUserData };
+    return () => unsubscribe();
+  }, []);
+
+  return { user: userData };
 };

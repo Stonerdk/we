@@ -5,7 +5,6 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import Protected from "../protected";
-import { useSession } from "next-auth/react";
 import { useUser } from "@/hooks/useUser";
 import { db } from "@/firebase/firebaseClient";
 import { collection, getDocs, limit, onSnapshot, Query, query, Timestamp, where } from "firebase/firestore";
@@ -18,15 +17,14 @@ import { NoMentor } from "./noMentor";
 import { MenteeClass } from "./menteeClass";
 
 const Page = () => {
-  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
-  const { userDoc } = useUser(session, setLoading);
+  const { user } = useUser(setLoading);
   const [cl, setCl] = useState<(ClassesDoc & { id: string }) | null>(null);
   const { selectedDate, ScheduleSelector } = useMentoringSchedule();
 
   const fetchClasses = useCallback(
     async (q: Query) => {
-      if (session) {
+      if (user) {
         setLoading(true);
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
@@ -41,15 +39,15 @@ const Page = () => {
         setLoading(false);
       }
     },
-    [session]
+    [user]
   );
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       const targetDate = Timestamp.fromMillis(new Date(selectedDate).getTime());
-      const selector = userDoc.isMentor
-        ? where("mentorID", "==", session.user.uid)
-        : where("menteeIDs", "array-contains", session.user.uid);
+      const selector = user.isMentor
+        ? where("mentorID", "==", user.id)
+        : where("menteeIDs", "array-contains", user.id);
       const q = query(
         collection(db, "classes"),
         where("datetime", ">=", targetDate),
@@ -68,7 +66,7 @@ const Page = () => {
       });
       return () => unsubscribe();
     }
-  }, [fetchClasses, selectedDate, session, session?.user.uid, userDoc]);
+  }, [fetchClasses, selectedDate, user, user?.id]);
 
   const menteeNoCl = () => (
     <div>
@@ -88,14 +86,14 @@ const Page = () => {
         <ScheduleSelector>
           {loading ? (
             <LoadingComponent />
-          ) : userDoc.isMentor ? (
+          ) : user!.isMentor ? (
             cl ? (
-              <MentorClass session={session} cl={cl} setCl={setCl} />
+              <MentorClass cl={cl} setCl={setCl} />
             ) : (
-              <MenteeList session={session} selectedDate={selectedDate} />
+              <MenteeList selectedDate={selectedDate} />
             )
           ) : cl ? (
-            <MenteeClass session={session} cl={cl} setCl={setCl} />
+            <MenteeClass cl={cl} setCl={setCl} />
           ) : (
             <NoMentor />
           )}

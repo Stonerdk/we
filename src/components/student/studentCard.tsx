@@ -35,17 +35,17 @@ export const StudentCard = ({
               <ProfileAux>{user.grade ? `${user.grade}학년` : `${getAge(user.birthday)}세`}</ProfileAux>
             </ProfileName>
 
-            <div className="flex gap-1 ml-1 ">
+            <div className="flex gap-1 ml-2 ">
               <CopyToClipboard text={user.email}>
                 <MdEmail
-                  color="gray"
-                  fontSize="1.2em"
+                  color="darkgray"
+                  fontSize="1.5em"
                   onClick={() => {
                     window.location.href = "mailto:" + user.email;
                   }}
                 />
               </CopyToClipboard>
-              <CopyToClipboard text={user.ktalkID}>
+              {/* <CopyToClipboard text={user.ktalkID}>
                 <RiKakaoTalkFill
                   color="gray"
                   fontSize="1.2em"
@@ -53,7 +53,7 @@ export const StudentCard = ({
                     window.location.href = "kakaotalk://profile/" + user.ktalkID;
                   }}
                 />
-              </CopyToClipboard>
+              </CopyToClipboard> */}
             </div>
           </div>
 
