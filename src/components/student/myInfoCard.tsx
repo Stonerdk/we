@@ -1,4 +1,4 @@
-import type { FormData } from "../register/register";
+import type { RegisterFormData } from "../register/register";
 import React, { useRef, useState } from "react";
 import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button } from "react-bootstrap";
 import { CardContainer } from "../common/cardContainer";
@@ -26,8 +26,6 @@ type MyInfoCardProps = {
   ktalkID: string;
   profileURL: string;
   desiredSubjects: string[];
-  isEmailVerified?: boolean;
-  isAdminVerified?: boolean;
   setBio: (bio: string) => void;
   setKtalkID: (ktalkID: string) => void;
   setDesiredSubjects: React.Dispatch<React.SetStateAction<string[]>>;
@@ -47,8 +45,6 @@ export const MyInfoCard = ({
   isMentor,
   ktalkID,
   desiredSubjects,
-  isEmailVerified,
-  isAdminVerified,
   setBio,
   setKtalkID,
   setDesiredSubjects,
@@ -131,13 +127,6 @@ export const MyInfoCard = ({
             value={bio}
             onChange={(e) => setBio(e.target.value)}
           />
-        </Col>
-      </Row>
-
-      <Row className="pb-1 pt-1">
-        <Col xs={12}>
-          <Warning>{!isEmailVerified && "이메일 인증이 완료되지 않았습니다."}</Warning>
-          <Warning>{isMentor && !isAdminVerified && "관리자에 의해 멘토로 인증되지 않았습니다."}</Warning>
         </Col>
       </Row>
 

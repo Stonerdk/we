@@ -1,12 +1,12 @@
 import { Form, Button } from "react-bootstrap";
 import { ruleFactory, addRule, useRules } from "../../hooks/formRules";
-import type { PhaseComponent, FormData } from "./register";
+import type { PhaseComponent, RegisterFormData } from "./register";
 import { Warning } from "../common/warning";
 import { RequiredAst } from "../common/symbol";
 import { wrapComponent } from "../../utils/wrap";
 
 const Phase1: PhaseComponent = ({ formData, handleChange, setPhase }) => {
-  const rules = ruleFactory<FormData>("name", "birthday", "gender");
+  const rules = ruleFactory<RegisterFormData>("name", "birthday", "gender");
   const verifyBirthday = (birthday: string) => {
     if (birthday.length !== 6 || isNaN(Number(birthday))) {
       return false;
@@ -21,11 +21,11 @@ const Phase1: PhaseComponent = ({ formData, handleChange, setPhase }) => {
       return false;
     }
 
-    const birthdate = new Date(year, month - 1, day - 1);
+    const birthdate = new Date(year, month - 1, day + 1);
     if (
       birthdate.getFullYear() !== year ||
       birthdate.getMonth() !== month - 1 ||
-      birthdate.getDate() !== day - 1
+      birthdate.getDate() !== day + 1
     ) {
       return false;
     }

@@ -10,10 +10,7 @@ import Image from "next/image";
 export const BackgroundComponent = (props: React.PropsWithChildren) => (
   <div className="background">
     <Image src="/assets/main/background.png" fill={true} alt={"background"} />
-
-    <Image src={assetGlobe} alt={"globe"} />
     <Image src={assetLogo} alt={"logo"} style={{ width: "50%", left: "25%", top: "2%" }} />
-    <Image src={assetPeople} alt={"people"} />
     {props.children}
   </div>
 );

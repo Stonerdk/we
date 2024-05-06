@@ -51,8 +51,6 @@ const Page = () => {
             grade={userDoc.grade ?? ""}
             ktalkID={userDoc.ktalkID}
             profileURL={userDoc.profileURL}
-            isEmailVerified={userDoc.isEmailVerified}
-            isAdminVerified={userDoc.isAdminVerified}
             desiredSubjects={userDoc.desiredSubjects}
             setProfileImage={setProfileImage}
             setBio={(bio: string) => setUserDoc({ ...userDoc, bio })}

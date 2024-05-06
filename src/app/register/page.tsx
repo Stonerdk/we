@@ -8,13 +8,6 @@ import { BackgroundComponent } from "@/components/background/background";
 import { RegisterComponent } from "@/components/register/register";
 
 export default function Home() {
-  const router = useRouter();
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     router.push("/login");
-  //   }
-  // }, [ isLoggedIn, router ]);
-
   return (
     <BackgroundComponent>
       <RegisterComponent />

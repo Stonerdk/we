@@ -58,7 +58,7 @@ const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setProfileIm
           style={{ marginBottom: "5px" }}
         />
         <div className="button-wrapper">
-          <Button variant="dark" className="register-nextbutton" onClick={() => setPhase(0)}>
+          <Button variant="dark" className="register-nextbutton" onClick={() => setPhase(2)}>
             이전
           </Button>
           <Button variant="success" className="register-nextbutton" type="submit" disabled={!validity}>

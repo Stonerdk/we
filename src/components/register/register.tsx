@@ -13,31 +13,33 @@ import Phase5 from "./phase5";
 import { defaultUserDoc, UserDoc } from "@/types/userDoc";
 
 import "./register.css";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth, db, storage } from "@/firebase/firebaseClient";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import LoadingComponent from "../common/loading";
 
-export type FormData = UserDoc & { password: string };
+export type RegisterFormData = UserDoc & { password: string; profileImage: File | null };
 type EventHandler = (
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
 ) => void;
 
 export type PhaseComponent = (
   props: {
-    formData: FormData;
+    formData: RegisterFormData;
     setPhase: React.Dispatch<SetStateAction<number>>;
   } & Partial<Record<string, any>>
 ) => JSX.Element;
 
-const initialValues: FormData = {
+const initialValues: RegisterFormData = {
   ...defaultUserDoc,
+  profileImage: null,
   password: "",
 };
 
 export const RegisterComponent = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState<FormData>(initialValues);
+  const [formData, setFormData] = useState<RegisterFormData>(initialValues);
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [phase, setPhase] = useState(0);
 
@@ -53,6 +55,11 @@ export const RegisterComponent = () => {
     const userCredential = await createUserWithEmailAndPassword(auth, formData.email, password);
     const user = userCredential.user;
 
+    await sendEmailVerification(auth.currentUser!, {
+      url: "https://projectwe-421109.web.app/",
+      handleCodeInApp: true,
+    });
+
     if (profileImage) {
       const storageRef = ref(storage, `profileImages/${user.uid}`);
       await uploadBytes(storageRef, profileImage);
@@ -62,6 +69,9 @@ export const RegisterComponent = () => {
 
     await setDoc(doc(db, "users", user.uid), formDataWithoutPassword);
   };
+
+  const checkValidEmail = () =>
+    getDocs(query(collection(db, "users"), where("email", "==", formData.email))).then((res) => res.empty);
 
   return (
     <div className="register-container">
@@ -77,7 +87,12 @@ export const RegisterComponent = () => {
       ) : phase == 1 ? (
         <Phase1 formData={formData} handleChange={handleChange} setPhase={setPhase} />
       ) : phase == 2 ? (
-        <Phase2 formData={formData} handleChange={handleChange} setPhase={setPhase} />
+        <Phase2
+          formData={formData}
+          handleChange={handleChange}
+          setPhase={setPhase}
+          checkValidEmail={checkValidEmail}
+        />
       ) : phase == 3 ? (
         <Phase3
           formData={formData}
@@ -91,9 +106,10 @@ export const RegisterComponent = () => {
           handleChange={handleChange}
           setPhase={setPhase}
           setFormData={setFormData}
+          submitRegister={submitRegister}
         />
       ) : phase == 5 ? (
-        <Phase5 formData={formData} router={router} submitRegister={submitRegister} />
+        <Phase5 formData={formData} router={router} />
       ) : null}
     </div>
   );

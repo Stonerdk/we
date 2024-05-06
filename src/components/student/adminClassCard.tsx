@@ -5,6 +5,9 @@ import { RowPanel } from "../common/rowPanel";
 import { subjectMap } from "../common/subjectSelector";
 import { UserDoc } from "@/types/userDoc";
 import { Image } from "react-bootstrap";
+import CopyToClipboard from "react-copy-to-clipboard";
+import { MdEmail } from "react-icons/md";
+import { RiKakaoTalkFill } from "react-icons/ri";
 
 export const AdminClassCard = ({
   cl,
@@ -45,8 +48,28 @@ export const AdminClassCard = ({
             <ProfileAux> {isMentor ? "멘토" : "멘티"}</ProfileAux>
           </small>
         </ProfileName>
-
-        <ProfileEmail>이메일</ProfileEmail>
+        {user && (
+          <div className="flex gap-1 ">
+            <CopyToClipboard text={user.email}>
+              <MdEmail
+                color="gray"
+                fontSize="1em"
+                onClick={() => {
+                  window.location.href = "mailto:" + user.email;
+                }}
+              />
+            </CopyToClipboard>
+            <CopyToClipboard text={user.ktalkID}>
+              <RiKakaoTalkFill
+                color="gray"
+                fontSize="1em"
+                onClick={() => {
+                  window.location.href = "kakaotalk://profile/" + user.ktalkID;
+                }}
+              />
+            </CopyToClipboard>
+          </div>
+        )}
       </ProfileDescription>
     </SmallUserPanelContainer>
   );

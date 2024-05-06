@@ -1,3 +1,5 @@
+"use client";
+
 import { CommonLayout } from "@/components/background/commonLayout";
 import Protected from "../protected";
 

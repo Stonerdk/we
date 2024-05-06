@@ -3,6 +3,9 @@ import { getAge } from "@/utils/getAge";
 import styled from "styled-components";
 import { Button, Image } from "react-bootstrap";
 import { PropsWithChildren } from "react";
+import { MdEmail } from "react-icons/md";
+import { RiKakaoTalkFill } from "react-icons/ri";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const subjectMap: { [key: string]: string } = {
   english: "영어",
@@ -22,26 +25,45 @@ export const StudentCard = ({
   const Inner = () => (
     <>
       <ProfileImageContainer>
-        <Image src={user.profileURL} roundedCircle alt="profile" />
+        <ProfileImage src={user.profileURL} roundedCircle alt="profile" />
       </ProfileImageContainer>
       <ProfileDescription>
         <div className="flex justify-content-between" style={{ width: "100%" }}>
-          <div className="flex flex-column justify-content-start">
+          <div className="flex justify-content-start flex-grow-1 align-items-center">
             <ProfileName>
               {user.name}{" "}
               <ProfileAux>{user.grade ? `${user.grade}학년` : `${getAge(user.birthday)}세`}</ProfileAux>
             </ProfileName>
-            <ProfileEmail>{user.email}</ProfileEmail>
+
+            <div className="flex gap-1 ml-1 ">
+              <CopyToClipboard text={user.email}>
+                <MdEmail
+                  color="gray"
+                  fontSize="1.2em"
+                  onClick={() => {
+                    window.location.href = "mailto:" + user.email;
+                  }}
+                />
+              </CopyToClipboard>
+              <CopyToClipboard text={user.ktalkID}>
+                <RiKakaoTalkFill
+                  color="gray"
+                  fontSize="1.2em"
+                  onClick={() => {
+                    window.location.href = "kakaotalk://profile/" + user.ktalkID;
+                  }}
+                />
+              </CopyToClipboard>
+            </div>
           </div>
+
           <div className="mr-2 mt-2">{children}</div>
         </div>
-
         <DesiredSubjectsContainer>
           {user.desiredSubjects.map((subject, index) => (
             <DesiredSubject key={index}>{subjectMap[subject]}</DesiredSubject>
           ))}
         </DesiredSubjectsContainer>
-
         <ProfileAux>{user.bio}</ProfileAux>
       </ProfileDescription>
     </>
@@ -70,6 +92,13 @@ const ProfileContainer = styled.div`
   border-radius: 12px;
   box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.2);
   padding: 6px;
+`;
+
+const ProfileImage = styled(Image)`
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
 `;
 
 const ProfileContainerFrameless = styled.div`
