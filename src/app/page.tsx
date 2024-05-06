@@ -20,7 +20,7 @@ import { useUser } from "@/hooks/useUser";
 import { useWarningToast } from "@/hooks/useWarningToast";
 import styled from "styled-components";
 
-const Overlay = styled.div<{ visible: boolean }>`
+const Overlay = styled.div<{ isactive: string }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -30,8 +30,8 @@ const Overlay = styled.div<{ visible: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: ${(props) => (props.visible ? 1000 : -1)};
-  opacity: ${(props) => (props.visible ? 1 : 0)};
+  z-index: ${(props) => (props.isactive === "true" ? 1000 : -1)};
+  opacity: ${(props) => (props.isactive === "true" ? 1 : 0)};
   backdrop-filter: blur(3px);
   transition: opacity 0.2s ease-in-out;
 `;
@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <Protected>
       {/* {loading && ( */}
-      <Overlay visible={loading}>
+      <Overlay isactive={loading ? "true" : "false"}>
         <Spinner animation="border" variant="white" />
       </Overlay>
       {/* )} */}

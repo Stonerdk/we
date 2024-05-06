@@ -3,16 +3,20 @@
 import { PropsWithChildren, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, SessionProvider } from "next-auth/react";
-import { AppProps } from "next/app";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/firebaseClient";
 
 const Protected = ({ children }: PropsWithChildren): JSX.Element => {
   const router = useRouter();
+  const [user, authLoading] = useAuthState(auth);
+
   const { status: sessionStatus } = useSession();
   const authorized = sessionStatus === "authenticated";
   const unAuthorized = sessionStatus === "unauthenticated";
   const loading = sessionStatus === "loading";
 
   useEffect(() => {
+    console.log(user);
     if (loading) return;
 
     if (unAuthorized) {
