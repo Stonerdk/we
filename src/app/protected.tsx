@@ -34,7 +34,7 @@ const Protected = ({ children }: PropsWithChildren): JSX.Element => {
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <BackgroundComponent>
         <Overlay isactive={loading ? "true" : "false"}>
@@ -44,7 +44,7 @@ const Protected = ({ children }: PropsWithChildren): JSX.Element => {
     );
   }
 
-  return <BackgroundComponent>{user && children}</BackgroundComponent>;
+  return <BackgroundComponent>{children}</BackgroundComponent>;
 };
 
 export default Protected;

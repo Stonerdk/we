@@ -1,18 +1,15 @@
-import { Warning } from "@/components/common/warning";
 import { StudentCard } from "@/components/student/studentCard";
 import { db } from "@/firebase/firebaseClient";
 import { ClassesDoc } from "@/types/classesDoc";
 import { UserDoc } from "@/types/userDoc";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { SetStateAction, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Image, Form, ToggleButtonGroup, ToggleButton, Button, Spinner } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 
 import { PropsWithChildren } from "react";
 import { CardContainer } from "@/components/common/cardContainer";
-import LoadingComponent from "@/components/common/loading";
 import { formatClassDuration } from "@/utils/dateUtil";
-import { SubjectSelector } from "@/components/common/subjectSelector";
 
 const subjectMap: { [key: string]: string } = {
   english: "영어",
@@ -65,7 +62,24 @@ export const MenteeClass = ({
           ))}
         </RowPanel>
         <RowPanel title="내용">{cl.description}</RowPanel>
-        <RowPanel title="URL">{cl.associatedURL}</RowPanel>
+        <RowPanel title="URL">
+          <div
+            style={{
+              wordBreak: "break-all",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+              width: "100%",
+            }}
+          >
+            {cl.associatedURL.startsWith("http") ? (
+              <a href={cl.associatedURL} target="_blank" rel="noreferrer">
+                {cl.associatedURL}
+              </a>
+            ) : (
+              cl.associatedURL
+            )}
+          </div>
+        </RowPanel>
         {cl.note && <RowPanel title="비고">{cl.note}</RowPanel>}
       </div>
     </CardContainer>

@@ -1,7 +1,7 @@
 "use client";
 import { CommonLayout } from "@/components/background/commonLayout";
 import { useUser } from "@/hooks/useUser";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import Protected from "../protected";
 import {
   collection,
@@ -98,13 +98,15 @@ const Page = () => {
     );
   }
 
+  const AdminClassCardMemo = memo(AdminClassCard);
+
   return (
     <Protected>
       <CommonLayout title="관리자" loading={loading}>
         <ScheduleSelector>
           <WrappedInfiniteScroll>
             {classes.map((cl, idx) => (
-              <AdminClassCard
+              <AdminClassCardMemo
                 key={idx}
                 cl={cl}
                 mentor={userInfo[cl.mentorID] ?? null}
@@ -124,7 +126,7 @@ const Page = () => {
                     승인
                   </Button>
                 )}
-              </AdminClassCard>
+              </AdminClassCardMemo>
             ))}
           </WrappedInfiniteScroll>
         </ScheduleSelector>

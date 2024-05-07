@@ -17,6 +17,7 @@ import { Button, Modal } from "react-bootstrap";
 import { defaultClassesDoc } from "@/types/classesDoc";
 import LoadingComponent from "@/components/common/loading";
 import { useUser } from "@/hooks/useUser";
+import { mentoringTime } from "@/utils/mentoringDates";
 
 export const MenteeList = ({ selectedDate }: { selectedDate: string }) => {
   const [loading, setLoading] = useState(false);
@@ -59,7 +60,7 @@ export const MenteeList = ({ selectedDate }: { selectedDate: string }) => {
       ...defaultClassesDoc,
       mentorID: user!.id,
       menteeIDs: [id],
-      datetime: Timestamp.fromMillis(new Date(selectedDate).getTime()),
+      datetime: Timestamp.fromMillis(new Date(`${selectedDate}T${mentoringTime}`).getTime()),
     });
     setLoading?.(false);
   };

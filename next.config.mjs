@@ -5,6 +5,24 @@ const withPWA = pwa({
   });
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "https://projectwe-421109.firebaseapp.com/",
+        port: "",
+        pathname: "/assets/main/**"
+      },
+      {
+        protocol: "https",
+        hostname: "https://projectwe-421109.web.app/",
+        port: "",
+        pathname: "/assets/main/**"
+      }
+    ]
+  }
+};
 
 export default nextConfig;

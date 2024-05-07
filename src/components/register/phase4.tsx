@@ -6,6 +6,7 @@ import { Warning } from "../common/warning";
 import { wrapComponent } from "../../utils/wrap";
 import { RequiredAst } from "../common/symbol";
 import { useWarningToast } from "@/hooks/useWarningToast";
+import styled from "styled-components";
 
 const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData, submitRegister }) => {
   const rules = ruleFactory("bio");
@@ -54,16 +55,19 @@ const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData,
           </Form.Label>
           <ToggleButtonGroup type="checkbox" style={{ width: "100%", justifyContent: "center" }}>
             {subjects.map((subject, i) => (
-              <ToggleButton
+              <StyledToggle
                 key={subject}
                 id={subject}
-                onClick={() => toggleSubject(subject)}
+                onChange={(e) => {
+                  toggleSubject(subject);
+                  e.target.blur();
+                }}
                 value={i}
                 variant="outline-success"
-                active={formData.desiredSubjects.includes(subject)}
+                checked={formData.desiredSubjects.includes(subject)}
               >
                 {subjectsKor[i]}
-              </ToggleButton>
+              </StyledToggle>
             ))}
           </ToggleButtonGroup>
           <Form.Label style={{ marginTop: "5px", marginBottom: "5px" }}>카카오톡 ID</Form.Label>
@@ -92,5 +96,12 @@ const Phase3: PhaseComponent = ({ formData, handleChange, setPhase, setFormData,
     </div>
   );
 };
+
+const StyledToggle = styled(ToggleButton)`
+  &:hover {
+    background: transparent;
+    color: #198754;
+  }
+`;
 
 export default Phase3;

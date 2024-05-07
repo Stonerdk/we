@@ -107,8 +107,7 @@ export default function Home() {
           src={btnMetaverse}
           alt={"메타버스"}
           onClick={() => {
-            setLoading(true);
-            router.push("/metaverse");
+            window.open("https://web.zepeto.me/ko/detail/w8mWG3wK879tPz52NOtKste?referrer=search", "_blank");
           }}
           style={{ width: "25%", left: "52%", top: "77%" }}
         />

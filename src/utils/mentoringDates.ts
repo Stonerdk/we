@@ -6,3 +6,5 @@ export const mentoringDates = [
   "2024-06-05",
   "2024-06-12",
 ];
+
+export const mentoringTime = "15:40:00";

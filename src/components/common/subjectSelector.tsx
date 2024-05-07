@@ -12,9 +12,9 @@ export const subjectMap: { [key: string]: string } = {
 };
 
 const StyledToggle = styled(ToggleButton)`
-  &:focus {
-    box-shadow: none !important;
-    outline: none !important;
+  &:hover {
+    background: transparent;
+    color: #198754;
   }
 `;
 
@@ -27,12 +27,16 @@ export const SubjectSelector = ({
 }) => {
   const [bitState, setBitState] = React.useState<boolean[]>(subjects.map((s) => state.includes(s)));
   useEffect(() => {
-    const newState = subjects.filter((_, i) => bitState[i]);
-    console.log(newState);
-    dispatch(newState);
+    dispatch(subjects.filter((_, i) => bitState[i]));
   }, [bitState]);
   return (
-    <ToggleButtonGroup type="checkbox" style={{ width: "100%", justifyContent: "center" }}>
+    <ToggleButtonGroup
+      type="checkbox"
+      style={{ width: "100%", justifyContent: "center" }}
+      onChange={(val) => {
+        setBitState(bitState.map((s, i) => (i === (val as unknown as number) ? !s : s)));
+      }}
+    >
       {subjects.map((subject, i) => (
         <StyledToggle
           key={subject}
@@ -40,11 +44,8 @@ export const SubjectSelector = ({
           size="sm"
           value={i}
           variant="outline-success"
-          active={bitState[i]}
-          onChange={(e) => {
-            bitState[i] = !bitState[i];
-            setBitState([...bitState]);
-          }}
+          checked={bitState[i]}
+          onChange={(e) => e.target.blur()}
         >
           {subjectsKor[i]}
         </StyledToggle>
