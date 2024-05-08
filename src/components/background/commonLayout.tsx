@@ -21,7 +21,18 @@ export const CommonLayout = ({
         </div>
         <div className="flex"></div>
       </div>
-      <div className="content">{loading ? <LoadingComponent /> : children}</div>
+      <div className="content">
+        {loading ? (
+          <div
+            className="flex align-items-center justify-content-center"
+            style={{ width: "100%", height: "100%" }}
+          >
+            <LoadingComponent />
+          </div>
+        ) : (
+          children
+        )}
+      </div>
     </div>
   </>
 );
