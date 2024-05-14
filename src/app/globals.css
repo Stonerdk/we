@@ -10,6 +10,7 @@
 
 body {
   touch-action: none;
+
   overflow: hidden;
   background: linear-gradient(
       to bottom,
@@ -17,6 +18,12 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+.cont {
+  margin: 0 auto; /* Center align the container */
+  padding: 0 0;
+  box-sizing: border-box;
 }
 
 .scrollable-element {

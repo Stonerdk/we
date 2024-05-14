@@ -26,32 +26,34 @@ const Page = () => {
   return (
     <Protected>
       <CommonLayout title="환경정화" loading={loading}>
-        <div style={{ width: "100%" }} className="flex justify-center position-relative">
-          <Image
-            src="https://cdn.jejusori.net/news/photo/202302/411949_420340_3735.png"
-            alt="jejuisland"
-            width={350}
-            height={200}
-            style={{ position: "relative", zIndex: 1 }}
-          />
-          {restorations.map((restoration, idx) => (
-            <div
-              key={idx}
-              style={{
-                position: "absolute",
-                top: restoration.y,
-                left: restoration.x,
-                width: "10px",
-                height: "10px",
-                borderRadius: "50%",
-                backgroundColor: "red",
-                cursor: "pointer",
-                zIndex: 2,
-                boxShadow: showTooltip === idx ? "0 0 8px 3px #ff0000" : "none", // glow 효과 조건적 추가
-              }}
-              onClick={() => setShowTooltip(idx)}
+        <div style={{ width: "100%" }} className="flex justify-center">
+          <div style={{ width: "350px", height: "250px" }} className="position-relative">
+            <Image
+              src="https://cdn.jejusori.net/news/photo/202302/411949_420340_3735.png"
+              alt="jejuisland"
+              width={350}
+              height={200}
+              style={{ position: "relative", zIndex: 1 }}
             />
-          ))}
+            {restorations.map((restoration, idx) => (
+              <div
+                key={idx}
+                style={{
+                  position: "absolute",
+                  top: restoration.y,
+                  left: restoration.x,
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "50%",
+                  backgroundColor: "red",
+                  cursor: "pointer",
+                  zIndex: 2,
+                  boxShadow: showTooltip === idx ? "0 0 8px 3px #ff0000" : "none", // glow 효과 조건적 추가
+                }}
+                onClick={() => setShowTooltip(idx)}
+              />
+            ))}
+          </div>
         </div>
         <hr />
         {showTooltip !== -1 && (

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebaseClient";
 import { BackgroundComponent } from "@/components/background/background";
-import { Spinner } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import styled from "styled-components";
 
 const Overlay = styled.div<{ isactive: string }>`
@@ -44,7 +44,7 @@ const Protected = ({ children }: PropsWithChildren): JSX.Element => {
     );
   }
 
-  return <BackgroundComponent>{children}</BackgroundComponent>;
+  return <div className="cont">{children}</div>;
 };
 
 export default Protected;

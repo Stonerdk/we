@@ -21,7 +21,7 @@ import { mentoringTime } from "@/utils/mentoringDates";
 export const MenteeList = ({ selectedDate }: { selectedDate: string }) => {
   const [loading, setLoading] = useState(false);
   const { user } = useUser(setLoading);
-  const [mentees, setMentees] = useState<UserDoc[]>([]);
+  const [mentees, setMentees] = useState<(UserDoc & { id: string })[]>([]);
   const [selectedMenteeId, setSelectedMenteeId] = useState<string>("");
   const [confirmModal, setConfirmModal] = useState<boolean>(false);
   const [assignedMentees, setAssignedMentees] = useState<string[]>([]);
@@ -32,7 +32,7 @@ export const MenteeList = ({ selectedDate }: { selectedDate: string }) => {
       setLoading(true);
       const q = query(collection(db, "users"), where("isMentor", "==", false));
       const docs = await getDocs(q);
-      const menteeList = docs.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as UserDoc);
+      const menteeList = docs.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as UserDoc & { id: string });
       setMentees(menteeList);
       setLoading(false);
     };
@@ -113,7 +113,7 @@ export const MenteeList = ({ selectedDate }: { selectedDate: string }) => {
       </Modal>
       <div>
         {mentees.map((mentee) => {
-          const isAssigned = assignedMentees.includes(mentee.id);
+          const isAssigned = mentee.id ? assignedMentees.includes(mentee.id) : false;
           return (
             <StudentCard
               key={mentee.id}

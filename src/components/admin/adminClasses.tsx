@@ -22,7 +22,7 @@ export const AdminClasses = ({ user }: { user: UserDoc }) => {
   const [loading, setLoading] = useState(true);
   const { selectedDate, ScheduleSelector } = useMentoringSchedule();
   const [userInfo, setUserInfo] = useState<{ [key: string]: UserDoc & { id: string } }>({});
-  const [classes, setClasses] = useState<ClassesDoc[]>([]);
+  const [classes, setClasses] = useState<(ClassesDoc & { id: string })[]>([]);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
@@ -38,7 +38,9 @@ export const AdminClasses = ({ user }: { user: UserDoc }) => {
       where("datetime", "<", new Timestamp(getTargetDate().seconds + 86400, 0))
     );
     const docs = await getDocs(q);
-    const classesList = docs.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as ClassesDoc);
+    const classesList = docs.docs.map(
+      (doc) => ({ id: doc.id, ...doc.data() }) as ClassesDoc & { id: string }
+    );
     setClasses(classesList);
     setLoading(false);
   };

@@ -9,11 +9,11 @@ import Image from "next/image";
 
 export const BackgroundComponent = (props: React.PropsWithChildren<{ globe?: boolean }>) => (
   <div className="background">
-    <Image src="/assets/main/background.png" fill={true} alt={"background"} />
-
-    {props.globe && <Image src={assetGlobe} alt={"globe"} />}
-    <Image src={assetLogo} alt={"logo"} style={{ width: "50%", left: "25%", top: "2%" }} />
-    {props.globe && <Image src={assetPeople} alt={"people"} />}
-    {props.children}
+    <div className="image-container">
+      {props.globe && <Image src={assetGlobe} alt={"globe"} />}
+      <Image src={assetLogo} alt={"logo"} style={{ width: "50%", left: "25%", top: "3%" }} />
+      {props.globe && <Image src={assetPeople} alt={"people"} style={{ width: "100%" }} />}
+      {props.children}
+    </div>
   </div>
 );
