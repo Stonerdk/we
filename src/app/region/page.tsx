@@ -4,7 +4,7 @@ import { CommonLayout } from "@/components/background/commonLayout";
 import { db } from "@/firebase/firebaseClient";
 import { collection } from "firebase/firestore";
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card } from "react-bootstrap";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FiChevronLeft } from "react-icons/fi";
@@ -72,7 +72,20 @@ const Page = () => {
               <Card.Title>
                 <b>{t.name}</b>
               </Card.Title>
-              <small style={{ whiteSpace: "pre-line" }}>{t.description}</small>
+              <small>
+                {
+                  t.description.split("\\n").map((text, i) =>
+                    i ? (
+                      <React.Fragment key={i}>
+                        <br />
+                        {text}
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment key={i}>{text}</React.Fragment>
+                    )
+                  ) /*eslint-disable-next-line react/jsx-key */
+                }
+              </small>
             </Card.Body>
           </Card>
         ))

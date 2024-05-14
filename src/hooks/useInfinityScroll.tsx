@@ -1,15 +1,5 @@
-import { PropsWithChildren, SetStateAction, useCallback, useEffect, useState } from "react";
-import {
-  CollectionReference,
-  DocumentData,
-  getDocs,
-  limit,
-  query,
-  QueryConstraint,
-  QueryDocumentSnapshot,
-  QuerySnapshot,
-  startAfter,
-} from "firebase/firestore";
+import { PropsWithChildren, useState } from "react";
+import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingComponent from "@/components/common/loading";
 
