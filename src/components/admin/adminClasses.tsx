@@ -1,31 +1,46 @@
-import { CommonLayout } from "@/components/background/commonLayout";
-import { useUser } from "@/hooks/useUser";
-import { useEffect, useState, memo, Dispatch, SetStateAction } from "react";
+import React, { useEffect, useState, memo } from "react";
 import {
   collection,
   doc,
   documentId,
   getDocs,
   query,
-  startAfter,
   Timestamp,
   updateDoc,
   where,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase/firebaseClient";
 import { UserDoc } from "@/types/userDoc";
-import { useInfinityScroll } from "@/hooks/useInfinityScroll";
-import { Button } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 import { useMentoringSchedule } from "@/hooks/useMentoringSchedule";
 import { ClassesDoc } from "@/types/classesDoc";
 import { AdminClassCard } from "@/components/student/adminClassCard";
+import LoadingComponent from "@/components/common/loading";
 
 export const AdminClasses = ({ user }: { user: UserDoc }) => {
   const [loading, setLoading] = useState(true);
   const { selectedDate, ScheduleSelector } = useMentoringSchedule();
   const [userInfo, setUserInfo] = useState<{ [key: string]: UserDoc & { id: string } }>({});
+  const [classes, setClasses] = useState<ClassesDoc[]>([]);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+
   const getTargetDate = () => {
     return Timestamp.fromMillis(new Date(selectedDate).getTime());
+  };
+
+  const fetchClasses = async () => {
+    setLoading(true);
+    const q = query(
+      collection(db, "classes"),
+      where("datetime", ">=", getTargetDate()),
+      where("datetime", "<", new Timestamp(getTargetDate().seconds + 86400, 0))
+    );
+    const docs = await getDocs(q);
+    const classesList = docs.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as ClassesDoc);
+    setClasses(classesList);
+    setLoading(false);
   };
 
   const onAdminVerify = async (id: string) => {
@@ -36,47 +51,33 @@ export const AdminClasses = ({ user }: { user: UserDoc }) => {
     setClasses(classes.map((cl) => (cl.id === id ? { ...cl, isAdminVerified: true } : cl)));
   };
 
-  const {
-    WrappedInfiniteScroll,
-    fetchEntries: fetchClasses,
-    setEntries: setClasses,
-    entries: classes,
-  } = useInfinityScroll<ClassesDoc>(
-    async () => {
+  const onRejectClass = async () => {
+    if (selectedClassId) {
       setLoading(true);
-      const q = query(
-        collection(db, "classes"),
-        where("datetime", ">=", getTargetDate()),
-        where("datetime", "<", new Timestamp(getTargetDate().seconds + 86400, 0))
-      );
-      const docs = await getDocs(q);
+      const classRef = doc(db, "classes", selectedClassId);
+      await deleteDoc(classRef);
       setLoading(false);
-      return docs;
-    },
-    async (lastVisible) => {
-      const q = query(
-        collection(db, "classes"),
-        where("datetime", ">=", getTargetDate()),
-        where("datetime", "<", new Timestamp(getTargetDate().seconds + 86400, 0)),
-        startAfter(lastVisible)
-      );
-      return await getDocs(q);
+      setClasses(classes.filter((cl) => cl.id !== selectedClassId));
+      setShowRejectModal(false);
+      setSelectedClassId(null);
+
+      // TODO: Implement push notification to mentor with rejectReason
     }
-  );
+  };
 
   useEffect(() => {
     const ids = classes
       .reduce<string[]>((acc, cur) => [...acc, ...cur.menteeIDs, cur.mentorID], [])
       .filter((id) => userInfo[id] === undefined && id !== "");
     if (ids.length === 0) return;
-    console.log(ids);
+
     const q = query(collection(db, "users"), where(documentId(), "in", ids));
     getDocs(q).then(({ docs }) => {
       const dr = docs.reduce<{ [key: string]: UserDoc & { id: string } }>(
-        (acc, cur) => ({ ...acc, [cur.id]: cur.data() as UserDoc & { id: string } }),
+        (acc, cur) => ({ ...acc, [cur.id]: { ...cur.data(), id: cur.id } as UserDoc & { id: string } }),
         {}
       );
-      setUserInfo({ ...userInfo, ...dr });
+      setUserInfo((prev) => ({ ...prev, ...dr }));
     });
   }, [classes]);
 
@@ -90,7 +91,21 @@ export const AdminClasses = ({ user }: { user: UserDoc }) => {
 
   return (
     <ScheduleSelector>
-      <WrappedInfiniteScroll>
+      {loading && <LoadingComponent />}
+
+      <Modal show={showRejectModal} onHide={() => setShowRejectModal(false)} centered>
+        <Modal.Body>삭제하시겠습니까?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowRejectModal(false)}>
+            취소
+          </Button>
+          <Button variant="danger" onClick={onRejectClass}>
+            삭제
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <div>
         {classes.map((cl, idx) => (
           <AdminClassCardMemo
             key={idx}
@@ -103,18 +118,31 @@ export const AdminClasses = ({ user }: { user: UserDoc }) => {
                 승인됨
               </Button>
             ) : (
-              <Button
-                onClick={() => onAdminVerify(cl.id)}
-                variant="success"
-                size="sm"
-                style={{ width: "80px" }}
-              >
-                승인
-              </Button>
+              <>
+                <Button
+                  onClick={() => onAdminVerify(cl.id)}
+                  variant="success"
+                  size="sm"
+                  style={{ width: "80px", marginRight: "5px" }}
+                >
+                  승인
+                </Button>
+                <Button
+                  onClick={() => {
+                    setSelectedClassId(cl.id);
+                    setShowRejectModal(true);
+                  }}
+                  variant="danger"
+                  size="sm"
+                  style={{ width: "80px" }}
+                >
+                  삭제
+                </Button>
+              </>
             )}
           </AdminClassCardMemo>
         ))}
-      </WrappedInfiniteScroll>
+      </div>
     </ScheduleSelector>
   );
 };

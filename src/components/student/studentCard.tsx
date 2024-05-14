@@ -17,9 +17,11 @@ const subjectMap: { [key: string]: string } = {
 export const StudentCard = ({
   user,
   children,
+  style,
   frame = true,
 }: PropsWithChildren<{
   user: UserDoc & { id: string };
+  style?: React.CSSProperties;
   frame?: boolean;
 }>) => {
   const Inner = () => (
@@ -70,11 +72,11 @@ export const StudentCard = ({
   );
 
   return frame ? (
-    <ProfileContainer>
+    <ProfileContainer style={style}>
       <Inner />
     </ProfileContainer>
   ) : (
-    <ProfileContainerFrameless>
+    <ProfileContainerFrameless style={style}>
       <Inner />
     </ProfileContainerFrameless>
   );
