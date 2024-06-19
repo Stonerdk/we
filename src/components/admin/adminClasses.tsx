@@ -107,7 +107,7 @@ export const AdminClasses = ({ user }: { user: UserDoc }) => {
         </Modal.Footer>
       </Modal>
 
-      <div>
+      <div className="flex flex-column overflow-y-scroll" style={{ maxHeight: "80vh" }}>
         {classes.map((cl, idx) => (
           <AdminClassCardMemo
             key={idx}

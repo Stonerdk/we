@@ -40,7 +40,7 @@ const Page = () => {
           </div>
 
           <p>{selectedFarm.description}</p>
-          <div className="flex flex-column gap-2 overflow-y-scroll" style={{ maxHeight: "700px" }}>
+          <div className="flex flex-column gap-2 overflow-y-scroll" style={{ maxHeight: "80vh" }}>
             {selectedFarm?.gallery?.map?.((item, idx) => (
               <Card key={idx}>
                 <div className="flex justify-content-center" style={{ width: "100%" }}>
@@ -63,32 +63,34 @@ const Page = () => {
           </div>
         </div>
       ) : (
-        ((farm as FarmDoc[]) ?? []).map((t, idx) => (
-          <Card key={idx} onClick={() => showFarmDetails(t)}>
-            <div className="flex justify-content-center" style={{ width: "100%" }}>
-              <Image src={t.imageUrl} alt={t.name} width={360} height={200} />
-            </div>
-            <Card.Body>
-              <Card.Title>
-                <b>{t.name}</b>
-              </Card.Title>
-              <small>
-                {
-                  t.description.split("\\n").map((text, i) =>
-                    i ? (
-                      <React.Fragment key={i}>
-                        <br />
-                        {text}
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment key={i}>{text}</React.Fragment>
-                    )
-                  ) /*eslint-disable-next-line react/jsx-key */
-                }
-              </small>
-            </Card.Body>
-          </Card>
-        ))
+        <div className="flex flex-column gap-2 overflow-y-scroll" style={{ maxHeight: "80vh" }}>
+          {((farm as FarmDoc[]) ?? []).map((t, idx) => (
+            <Card key={idx} onClick={() => showFarmDetails(t)}>
+              <div className="flex justify-content-center" style={{ width: "100%" }}>
+                <Image src={t.imageUrl} alt={t.name} width={360} height={200} />
+              </div>
+              <Card.Body>
+                <Card.Title>
+                  <b>{t.name}</b>
+                </Card.Title>
+                <small>
+                  {
+                    t.description.split("\\n").map((text, i) =>
+                      i ? (
+                        <React.Fragment key={i}>
+                          <br />
+                          {text}
+                        </React.Fragment>
+                      ) : (
+                        <React.Fragment key={i}>{text}</React.Fragment>
+                      )
+                    ) /*eslint-disable-next-line react/jsx-key */
+                  }
+                </small>
+              </Card.Body>
+            </Card>
+          ))}
+        </div>
       )}
     </CommonLayout>
   );

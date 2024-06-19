@@ -10,6 +10,8 @@ import { Row, Col } from "react-bootstrap";
 import { PropsWithChildren } from "react";
 import { CardContainer } from "@/components/common/cardContainer";
 import { formatClassDuration } from "@/utils/dateUtil";
+import { FiStar } from "react-icons/fi";
+import { FaStar } from "react-icons/fa";
 
 const subjectMap: { [key: string]: string } = {
   english: "영어",
@@ -53,8 +55,12 @@ export const MenteeClass = ({
       <div className="m-2">
         <b>내 멘토</b>
       </div>
-      {userDoc && <StudentCard user={userDoc} frame={false} />}
-      <div className="ml-2 mr-2">
+      {userDoc && (
+        <StudentCard user={userDoc} frame={false} style={{ maxHeight: "80vh" }}>
+          {/* <FaStar color="gold" /> 3.5 */}
+        </StudentCard>
+      )}
+      <div className="ml-2 mr-2 flex flex-column gap-2 overflow-y-scroll">
         <RowPanel title="시간">{formatClassDuration(cl.datetime.toDate(), cl.duration)}</RowPanel>
         <RowPanel title="과목">
           {cl.subjects.map((subject, index) => (
@@ -82,6 +88,7 @@ export const MenteeClass = ({
         </RowPanel>
         {cl.note && <RowPanel title="비고">{cl.note}</RowPanel>}
       </div>
+      <hr />
     </CardContainer>
   );
 };

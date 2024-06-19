@@ -39,7 +39,7 @@ const Page = () => {
           </div>
 
           <p>{selectedTown.description}</p>
-          <div className="flex flex-column gap-2 overflow-y-scroll" style={{ maxHeight: "700px" }}>
+          <div className="flex flex-column gap-2 overflow-y-scroll" style={{ maxHeight: "80vh" }}>
             {selectedTown.gallery.map((item, idx) => (
               <Card key={idx}>
                 <div className="flex justify-content-center" style={{ width: "100%" }}>
@@ -62,19 +62,21 @@ const Page = () => {
           </div>
         </div>
       ) : (
-        ((town as TownDoc[]) ?? []).map((t, idx) => (
-          <Card key={idx} onClick={() => showTownDetails(t)}>
-            <div className="flex justify-content-center" style={{ width: "100%" }}>
-              <Image src={t.imageUrl} alt={t.name} width={360} height={200} />
-            </div>
-            <Card.Body>
-              <Card.Title>
-                <b>{t.name}</b>
-              </Card.Title>
-              <small style={{ whiteSpace: "pre-line" }}>{t.description}</small>
-            </Card.Body>
-          </Card>
-        ))
+        <div className="flex flex-column gap-2 overflow-y-scroll" style={{ maxHeight: "80vh" }}>
+          {((town as TownDoc[]) ?? []).map((t, idx) => (
+            <Card key={idx} onClick={() => showTownDetails(t)}>
+              <div className="flex justify-content-center" style={{ width: "100%" }}>
+                <Image src={t.imageUrl} alt={t.name} width={360} height={200} />
+              </div>
+              <Card.Body>
+                <Card.Title>
+                  <b>{t.name}</b>
+                </Card.Title>
+                <small style={{ whiteSpace: "pre-line" }}>{t.description}</small>
+              </Card.Body>
+            </Card>
+          ))}
+        </div>
       )}
     </CommonLayout>
   );

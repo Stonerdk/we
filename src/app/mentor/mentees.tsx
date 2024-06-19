@@ -111,7 +111,7 @@ export const MenteeList = ({ selectedDate }: { selectedDate: string }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div>
+      <div className="flex flex-column overflow-y-scroll" style={{ maxHeight: "80vh" }}>
         {mentees.map((mentee) => {
           const isAssigned = mentee.id ? assignedMentees.includes(mentee.id) : false;
           return (

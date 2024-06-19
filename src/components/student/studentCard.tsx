@@ -36,7 +36,6 @@ export const StudentCard = ({
               {user.name}{" "}
               <ProfileAux>{user.grade ? `${user.grade}학년` : `${getAge(user.birthday)}세`}</ProfileAux>
             </ProfileName>
-
             <div className="flex gap-1 ml-2 ">
               <CopyToClipboard text={user.email}>
                 <MdEmail
@@ -58,7 +57,6 @@ export const StudentCard = ({
               </CopyToClipboard> */}
             </div>
           </div>
-
           <div className="mr-2 mt-2">{children}</div>
         </div>
         <DesiredSubjectsContainer>
