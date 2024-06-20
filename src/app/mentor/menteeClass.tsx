@@ -53,13 +53,13 @@ export const MenteeClass = ({
   const { user } = useUser(setLoading);
   const [userDoc, setUserDoc] = useState<(UserDoc & { id: string }) | null>(null);
   const [userScore, setUserScore] = useState(5);
-  const [hoverScore, setHoverScore] = useState(null);
+  const [hoverScore, setHoverScore] = useState<number | null>(null);
   const [myReview, setMyReview] = useState("");
   const [reviews, setReviews] = useState<(ReviewsDoc & { id: string })[]>([]);
   const [avgScore, setAvgScore] = useState<number>(0);
   const [reviewCnt, setReviewCnt] = useState<number>(0);
 
-  const handleMouseOver = (index) => {
+  const handleMouseOver = (index: number) => {
     setHoverScore(index);
   };
 
@@ -67,15 +67,11 @@ export const MenteeClass = ({
     setHoverScore(null);
   };
 
-  const handleClick = (index) => {
+  const handleClick = (index: number) => {
     setUserScore(index);
   };
 
-  const handleDragStart = (event) => {
-    event.preventDefault();
-  };
-
-  const getStarIcon = (index) => {
+  const getStarIcon = (index: number) => {
     const actualScore = hoverScore !== null ? hoverScore : userScore;
     if (index < actualScore) {
       if (index + 0.5 < actualScore) {
@@ -230,7 +226,9 @@ export const MenteeClass = ({
                     <div
                       className="flex gap-1 pt-1 pb-1 ps-2 pe-2 align-items-center"
                       style={{ borderRadius: "2px", background: "#f3f3f2", width: "100px", height: "30px" }}
-                      onDragStart={handleDragStart}
+                      onDragStart={(e) => {
+                        e.preventDefault();
+                      }}
                     >
                       {[0, 1, 2, 3, 4].map((index) => (
                         <span
