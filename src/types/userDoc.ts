@@ -5,6 +5,8 @@ export interface UserDoc {
   bio: string;
   email: string;
   ktalkID: string;
+  avgScore: number;
+  reviewCnt: number;
   desiredSubjects: string[];
   isMentor: boolean;
   grade?: string;
@@ -22,6 +24,8 @@ export const defaultUserDoc: UserDoc = {
   bio: "",
   email: "",
   ktalkID: "",
+  avgScore: 0,
+  reviewCnt: 0,
   desiredSubjects: [],
   isMentor: false,
   grade: "",

@@ -19,10 +19,12 @@ export const StudentCard = ({
   children,
   style,
   frame = true,
+  onClick = () => {},
 }: PropsWithChildren<{
   user: UserDoc & { id: string };
   style?: React.CSSProperties;
   frame?: boolean;
+  onClick?: () => void;
 }>) => {
   const Inner = () => (
     <>
@@ -70,11 +72,11 @@ export const StudentCard = ({
   );
 
   return frame ? (
-    <ProfileContainer style={style}>
+    <ProfileContainer style={style} onClick={onClick}>
       <Inner />
     </ProfileContainer>
   ) : (
-    <ProfileContainerFrameless style={style}>
+    <ProfileContainerFrameless style={style} onClick={onClick}>
       <Inner />
     </ProfileContainerFrameless>
   );
@@ -115,6 +117,7 @@ const ProfileImageContainer = styled.div`
   width: 70px;
   height: 70px;
   border-radius: 10px;
+  flex-shrink: 0;
 `;
 
 const ProfileDescription = styled.div`

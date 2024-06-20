@@ -1,9 +1,16 @@
-import React, { useRef, useState } from "react";
-import { Row, Col, Image, Form, Button } from "react-bootstrap";
+import React, { useEffect, useRef, useState } from "react";
+import { Row, Col, Image, Form, Button, Accordion } from "react-bootstrap";
 import { CardContainer } from "../common/cardContainer";
 import { PropsWithChildren } from "react";
 import { Warning } from "../common/warning";
 import { SubjectSelector } from "../common/subjectSelector";
+import styled from "styled-components";
+import { ReviewCard } from "./reviewCard";
+import { ReviewsDoc } from "@/types/reviewsDoc";
+import { collection, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
+import { db } from "@/firebase/firebaseClient";
+import { UserDoc } from "@/types/userDoc";
+import { FaStar } from "react-icons/fa";
 
 const RowPanel = ({ title, children }: PropsWithChildren<{ title: string }>) => (
   <Row className="pb-1 pt-1 align-items-center">
@@ -22,6 +29,8 @@ type MyInfoCardProps = {
   email: string;
   grade: string;
   isMentor: boolean;
+  reviews: (ReviewsDoc & { id: string })[];
+  avgScore: number;
   ktalkID: string;
   profileURL: string;
   desiredSubjects: string[];
@@ -39,6 +48,8 @@ export const MyInfoCard = ({
   gender,
   bio,
   grade,
+  reviews,
+  avgScore,
   email,
   profileURL,
   isMentor,
@@ -141,6 +152,53 @@ export const MyInfoCard = ({
           </Button>
         </Col>
       </Row>
+      <hr />
+
+      {isMentor && (
+        <Accordion className="ml-2 mr-2" defaultActiveKey="0" flush>
+          <Accordion.Item eventKey="0" style={{ border: "none" }}>
+            <CustomAccordionButton>
+              <div className="flex justify-content-between align-items-center" style={{ width: "100%" }}>
+                <b>
+                  <small>리뷰 보기</small>
+                </b>
+                <div className="flex justify-content-between align-items-center gap-1 mr-2">
+                  <FaStar color="gold" /> {avgScore.toFixed(1)}
+                </div>
+              </div>
+            </CustomAccordionButton>
+            <Accordion.Body style={{ padding: 0 }}>
+              <div style={{ maxHeight: "450px", overflowY: "scroll" }}>
+                {reviews.map((review, idx) => (
+                  <ReviewCard
+                    username={review.menteeName}
+                    profileURL={review.menteeProfileURL}
+                    score={review.score}
+                    date={review.datetime.toDate().toLocaleDateString()}
+                    review={review.review}
+                    key={idx}
+                  />
+                ))}
+              </div>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      )}
     </CardContainer>
   );
 };
+
+const CustomAccordionButton = styled(Accordion.Button)`
+  padding: 4px 0;
+  border: none;
+  margin: 0;
+  background: none;
+  color: black;
+  &:not(.collapsed) {
+    background: none;
+    color: black;
+    ::after {
+      color: black;
+    }
+  }
+`;

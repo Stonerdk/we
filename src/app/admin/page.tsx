@@ -6,6 +6,7 @@ import Protected from "../protected";
 import { Nav } from "react-bootstrap";
 import { AdminClasses } from "@/components/admin/adminClasses";
 import { AdminRestoration } from "@/components/admin/adminRestoration";
+import { AdminMentors } from "@/components/admin/adminMentors";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -37,11 +38,16 @@ const Page = () => {
           <Nav.Item>
             <Nav.Link eventKey="restoration">환경 정화</Nav.Link>
           </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="mentors">멘토 관리</Nav.Link>
+          </Nav.Item>
         </Nav>
         {navKey === "classes" ? (
           <AdminClasses user={user} />
         ) : navKey === "restoration" ? (
           <AdminRestoration />
+        ) : navKey == "mentors" ? (
+          <AdminMentors />
         ) : (
           <></>
         )}
