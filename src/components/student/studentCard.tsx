@@ -4,8 +4,8 @@ import styled from "styled-components";
 import { Button, Image } from "react-bootstrap";
 import { PropsWithChildren } from "react";
 import { MdEmail } from "react-icons/md";
-import { RiKakaoTalkFill } from "react-icons/ri";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { BsFillChatFill } from "react-icons/bs";
 
 const subjectMap: { [key: string]: string } = {
   english: "영어",
@@ -20,11 +20,13 @@ export const StudentCard = ({
   style,
   frame = true,
   onClick = () => {},
+  onMessage = () => {},
 }: PropsWithChildren<{
   user: UserDoc & { id: string };
   style?: React.CSSProperties;
   frame?: boolean;
   onClick?: () => void;
+  onMessage?: () => void;
 }>) => {
   const Inner = () => (
     <>
@@ -48,23 +50,17 @@ export const StudentCard = ({
                   }}
                 />
               </CopyToClipboard>
-              {/* <CopyToClipboard text={user.ktalkID}>
-                <RiKakaoTalkFill
-                  color="gray"
-                  fontSize="1.2em"
-                  onClick={() => {
-                    window.location.href = "kakaotalk://profile/" + user.ktalkID;
-                  }}
-                />
-              </CopyToClipboard> */}
+              <BsFillChatFill color="darkgray" fontSize="1.3em" onClick={() => onMessage()} />
             </div>
           </div>
-          <div className="mr-2 mt-2">{children}</div>
         </div>
         <DesiredSubjectsContainer>
-          {user.desiredSubjects.map((subject, index) => (
-            <DesiredSubject key={index}>{subjectMap[subject]}</DesiredSubject>
-          ))}
+          <DesiredSubjectsWrapper>
+            {user.desiredSubjects.map((subject, index) => (
+              <DesiredSubject key={index}>{subjectMap[subject]}</DesiredSubject>
+            ))}
+          </DesiredSubjectsWrapper>
+          <ChildrenWrapper>{children}</ChildrenWrapper>
         </DesiredSubjectsContainer>
         <ProfileAux>{user.bio}</ProfileAux>
       </ProfileDescription>
@@ -127,7 +123,7 @@ const ProfileDescription = styled.div`
 `;
 
 const ProfileName = styled.div`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
 `;
 
@@ -148,7 +144,18 @@ const ProfileAux = styled.span`
 const DesiredSubjectsContainer = styled.div`
   display: flex;
   margin-bottom: 5px;
+  justify-content: space-between;
   gap: 5px;
+`;
+
+const DesiredSubjectsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ChildrenWrapper = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const DesiredSubject = styled.div`

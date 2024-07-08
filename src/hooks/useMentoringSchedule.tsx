@@ -9,14 +9,14 @@ export const useMentoringSchedule = () => {
   const [selectedDate, setSelectedDate] = useState(mentoringDates[selectedDateIndex]);
 
   const swipeHandler = useSwipeable({
-    onSwipedLeft: () => {
-      nextDate();
-    },
-    onSwipedRight: () => {
-      prevDate();
-    },
+    // onSwipedLeft: () => {
+    //   nextDate();
+    // },
+    // onSwipedRight: () => {
+    //   prevDate();
+    // },
     onSwiping: (event) => {
-      const miDistance = 50;
+      const miDistance = 100;
       const { deltaX } = event;
       if (deltaX > miDistance) {
         prevDate();

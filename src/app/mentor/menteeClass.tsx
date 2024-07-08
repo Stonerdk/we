@@ -26,6 +26,8 @@ import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { ReviewCard } from "@/components/student/reviewCard";
 import { defaultReviewsDoc, ReviewsDoc } from "@/types/reviewsDoc";
 import { useUser } from "@/hooks/useUser";
+import { redirect, useRouter } from "next/navigation";
+import { useChatroom } from "@/hooks/useChatroom";
 
 const subjectMap: { [key: string]: string } = {
   english: "영어",
@@ -58,6 +60,7 @@ export const MenteeClass = ({
   const [reviews, setReviews] = useState<(ReviewsDoc & { id: string })[]>([]);
   const [avgScore, setAvgScore] = useState<number>(0);
   const [reviewCnt, setReviewCnt] = useState<number>(0);
+  const router = useRouter();
 
   const handleMouseOver = (index: number) => {
     setHoverScore(index);
@@ -75,12 +78,12 @@ export const MenteeClass = ({
     const actualScore = hoverScore !== null ? hoverScore : userScore;
     if (index < actualScore) {
       if (index + 0.5 < actualScore) {
-        return <FaStar color="gold" />;
+        return <FaStar color="gold" size="1.2em" />;
       } else {
-        return <FaStarHalfAlt color="gold" />;
+        return <FaStarHalfAlt color="gold" size="1.2em" />;
       }
     } else {
-      return <FaRegStar color="gold" />;
+      return <FaRegStar color="gold" size="1.2em" />;
     }
   };
 
@@ -89,7 +92,7 @@ export const MenteeClass = ({
       setLoading(true);
       if (cl.menteeIDs.length === 0) return;
       const res = await getDoc(doc(db, "users", cl.mentorID));
-      setUserDoc(res.data() as UserDoc & { id: string });
+      setUserDoc({ id: res.id, ...res.data() } as UserDoc & { id: string });
       setLoading(false);
     };
     fetchUser();
@@ -155,6 +158,10 @@ export const MenteeClass = ({
     }
   };
 
+  const startMessage = async (u: UserDoc & { id: string }) => {
+    router.push(`/chat/${u.id}`);
+  };
+
   if (loading || !userDoc) return <></>;
   return (
     <CardContainer style={{ marginTop: "5px" }}>
@@ -162,15 +169,17 @@ export const MenteeClass = ({
         <b>내 멘토</b>
       </div>
       {userDoc && (
-        <StudentCard user={userDoc} frame={false} style={{ maxHeight: "80vh" }}>
-          <div className="flex gap-1 align-items-center">
-            <FaStar color="gold" />
-            <span style={{ color: reviewCnt > 0 ? "black" : "gray" }}>
-              {avgScore.toFixed(1)}
-              <small>{` (${reviewCnt})`}</small>
-            </span>
-            <small></small>
-          </div>
+        <StudentCard
+          user={userDoc}
+          frame={false}
+          style={{ maxHeight: "80vh" }}
+          onMessage={() => startMessage(userDoc)}
+        >
+          <FaStar color="gold" className="mr-1" />
+          <span style={{ color: reviewCnt > 0 ? "black" : "gray", height: "100%" }}>
+            {avgScore.toFixed(1)}
+            <small>{` (${reviewCnt})`}</small>
+          </span>
         </StudentCard>
       )}
       <div className="ml-2 mr-2 flex flex-column gap-2">
@@ -225,16 +234,18 @@ export const MenteeClass = ({
                   <div className="flex justify-content-end align-items-center gap-2">
                     <div
                       className="flex gap-1 pt-1 pb-1 ps-2 pe-2 align-items-center"
-                      style={{ borderRadius: "2px", background: "#f3f3f2", width: "100px", height: "30px" }}
-                      onDragStart={(e) => {
-                        e.preventDefault();
+                      style={{
+                        borderRadius: "2px",
+                        width: "115px",
+                        height: "30px",
+                        border: "solid",
+                        borderWidth: "1px",
+                        borderColor: "#cccccc",
                       }}
                     >
                       {[0, 1, 2, 3, 4].map((index) => (
                         <span
                           key={index}
-                          onPointerOver={() => handleMouseOver(index + 1)}
-                          onPointerLeave={handleMouseLeave}
                           onClick={() => handleClick(index + 1)}
                           style={{ cursor: "pointer" }}
                         >
@@ -243,7 +254,7 @@ export const MenteeClass = ({
                       ))}
                     </div>
                     <Button variant="success" type="submit" size="sm">
-                      제출
+                      제출ㅇㅇ
                     </Button>
                   </div>
                 </div>

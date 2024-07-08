@@ -126,7 +126,6 @@ export const AdminMentors = () => {
                 <FaStar color="gold" />
                 <span style={{ color: (mentor?.reviewCnt ?? 0) > 0 ? "black" : "gray" }}>
                   {mentor?.avgScore?.toFixed(1) ?? "0.0"}
-                  <small>{` (${mentor?.reviewCnt ?? 0})`}</small>
                 </span>
               </div>
             </StudentCard>

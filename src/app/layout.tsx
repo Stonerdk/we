@@ -1,9 +1,11 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect } from "react";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import Head from "next/head";
 import { Metadata, Viewport } from "next";
+import { doc } from "firebase/firestore";
 
 export const metadata: Metadata = {
   title: "WE",

@@ -3,7 +3,7 @@ import { StudentCard } from "@/components/student/studentCard";
 import { db } from "@/firebase/firebaseClient";
 import { ClassesDoc } from "@/types/classesDoc";
 import { UserDoc } from "@/types/userDoc";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { SetStateAction, useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 
@@ -12,6 +12,9 @@ import LoadingComponent from "@/components/common/loading";
 import { formatClassDuration } from "@/utils/dateUtil";
 import { SubjectSelector } from "@/components/common/subjectSelector";
 import { RowPanel } from "@/components/common/rowPanel";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/hooks/useUser";
+import { useChatroom } from "@/hooks/useChatroom";
 export const MentorClass = ({
   cl,
   setCl,
@@ -19,7 +22,9 @@ export const MentorClass = ({
   cl: ClassesDoc & { id: string };
   setCl: React.Dispatch<SetStateAction<(ClassesDoc & { id: string }) | null>>;
 }) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { user } = useUser(setLoading);
   const [userDoc, setUserDoc] = useState<(UserDoc & { id: string }) | null>(null);
   const [clInfo, setClInfo] = useState<ClassesDoc>(cl);
   const [clSubjects, setClSubjects] = useState<string[]>(cl.subjects);
@@ -40,10 +45,27 @@ export const MentorClass = ({
     const fetchUser = async () => {
       if (cl.menteeIDs.length === 0) return;
       const res = await getDoc(doc(db, "users", cl.menteeIDs[0]));
-      setUserDoc(res.data() as UserDoc & { id: string });
+      setUserDoc({ id: res.id, ...res.data() } as UserDoc & { id: string });
     };
     fetchUser();
   }, []);
+
+  const startMessage = async (u: UserDoc & { id: string }) => {
+    if (user?.id) {
+      console.log(user.id, u);
+      const q = query(collection(db, "chats"), where("mentor", "==", user.id), where("mentee", "==", u.id));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        await addDoc(collection(db, "chats"), {
+          mentor: user.id,
+          mentee: u.id,
+        });
+      }
+
+      router.push(`/chat/${u.id}`);
+    }
+  };
 
   if (loading) return <LoadingComponent />;
   return (
@@ -52,7 +74,7 @@ export const MentorClass = ({
         <b>내 멘티</b>
       </div>
 
-      {userDoc && <StudentCard user={userDoc} frame={false} />}
+      {userDoc && <StudentCard user={userDoc} frame={false} onMessage={() => startMessage(userDoc)} />}
       <div className="ml-2 mr-2 flex flex-column gap-2 overflow-y-scroll" style={{ maxHeight: "80vh" }}>
         <Warning>
           <small>{!cl.isAdminVerified && "아직 관리자로부터 승인되지 않았습니다."}</small>

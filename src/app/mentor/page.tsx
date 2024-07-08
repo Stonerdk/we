@@ -15,12 +15,19 @@ import { useMentoringSchedule } from "@/hooks/useMentoringSchedule";
 import { MentorClass } from "./mentoringClass";
 import { NoMentor } from "./noMentor";
 import { MenteeClass } from "./menteeClass";
+import { useChatroom } from "@/hooks/useChatroom";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useUser(setLoading);
+  const { chatRoomList } = useChatroom(user, setLoading);
   const [cl, setCl] = useState<(ClassesDoc & { id: string }) | null>(null);
   const { selectedDate, ScheduleSelector } = useMentoringSchedule();
+  const [chatCount, setChatCount] = useState<number>(0);
+
+  useEffect(() => {
+    setChatCount(chatRoomList.reduce((acc, cur) => acc + cur.count, 0));
+  }, [chatRoomList]);
 
   const fetchClasses = useCallback(
     async (q: Query) => {
@@ -82,7 +89,7 @@ const Page = () => {
 
   return (
     <Protected>
-      <CommonLayout title="내 수업">
+      <CommonLayout title="내 수업" chat chatCount={chatCount}>
         <ScheduleSelector>
           {loading ? (
             <LoadingComponent />

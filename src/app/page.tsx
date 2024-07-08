@@ -14,12 +14,13 @@ import btnTown from "/public/assets/main/btn_town.png";
 import btnAdmin from "/public/assets/main/btn_admin.png";
 import { Button, Spinner } from "react-bootstrap";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@/hooks/useUser";
 import { useWarningToast } from "@/hooks/useWarningToast";
 import styled from "styled-components";
 import { auth } from "@/firebase/firebaseClient";
 import { signOut } from "firebase/auth";
+import { useChatroom } from "@/hooks/useChatroom";
 
 const Overlay = styled.div<{ isactive: string }>`
   position: fixed;
@@ -40,9 +41,15 @@ const Overlay = styled.div<{ isactive: string }>`
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const { user } = useUser(setLoading);
+  const { chatRoomList } = useChatroom(user, setLoading);
   const { openToast, WarningToast } = useWarningToast();
+  const [chatCount, setChatCount] = useState<number>(0);
 
   const router = useRouter();
+
+  useEffect(() => {
+    setChatCount(chatRoomList.reduce((acc, cur) => acc + cur.count, 0));
+  }, [chatRoomList]);
 
   return (
     <Protected>
@@ -57,21 +64,47 @@ export default function Home() {
           alt={"희망학생"}
           onClick={() => {
             setLoading(true);
-
             router.push("/student");
           }}
           style={{ width: "22%", left: "2%", top: "20%" }}
         />
 
-        <Image
-          src={btnMentor}
-          alt={"멘토/멘티"}
-          onClick={() => {
-            setLoading(true);
-            router.push("/mentor");
+        <div
+          style={{
+            width: "25%",
+            left: "37%",
+            top: "15%",
           }}
-          style={{ width: "25%", left: "37%", top: "15%" }}
-        />
+        >
+          <Image
+            src={btnMentor}
+            alt={"멘토/멘티"}
+            onClick={() => {
+              setLoading(true);
+              router.push("/mentor");
+            }}
+          />
+
+          {chatCount > 0 && (
+            <div
+              style={{
+                position: "absolute",
+                backgroundColor: "#ce2222",
+                color: "white",
+                right: "3%",
+                top: "3%",
+                textAlign: "center",
+                borderRadius: "15px",
+                paddingLeft: "7px",
+                paddingRight: "7px",
+                fontSize: "13pt",
+                fontStyle: "bold",
+              }}
+            >
+              {chatCount}
+            </div>
+          )}
+        </div>
 
         <Image
           src={btnTown}
